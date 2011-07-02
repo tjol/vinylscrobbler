@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	Template file for lastfm.xml
+
+	Enter a last.fm API key and secret here to make Last.fm work.
+ -->
+<resources>
+    <string name="lastfm_api_root">http://ws.audioscrobbler.com/2.0/</string>
+    <string name="lastfm_api_key">KEY GOES HERE</string>
+    <string name="lastfm_api_secret">SECRET GOES HERE</string>
+</resources>

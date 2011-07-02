@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent" android:focusable="false">
+    <ImageView android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/item_image" android:layout_alignParentLeft="true" android:maxWidth="75sp" android:adjustViewBounds="true"></ImageView>
+    <LinearLayout android:layout_alignParentRight="true" android:layout_toRightOf="@id/item_image" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/linearLayout1" android:orientation="vertical" android:paddingLeft="8sp">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/item_title" android:text="Title" android:textSize="18sp" android:textStyle="bold"></TextView>
+        <TextView android:layout_height="wrap_content" android:id="@+id/item_info1" android:layout_width="wrap_content" android:text="INFO LINE 1" android:textSize="11sp"></TextView>
+        <TextView android:layout_height="wrap_content" android:id="@+id/item_info2" android:layout_width="wrap_content" android:text="INFO LINE 2" android:textSize="11sp"></TextView>
+    </LinearLayout>
+</RelativeLayout>

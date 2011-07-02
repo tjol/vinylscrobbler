@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="de.jollybox.vinylscrobbler"
+      android:versionCode="1"
+      android:versionName="1.0">
+
+
+    <activity android:name="MainScreen"></activity>
+<uses-permission android:name="android.permission.INTERNET"></uses-permission>
+<uses-sdk android:minSdkVersion="4" android:targetSdkVersion="10"></uses-sdk>
+<application android:icon="@drawable/icon" android:label="@string/app_name">
+        
+        <activity android:name=".SearchScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH"></action>
+            </intent-filter>
+            <meta-data android:resource="@xml/searchable" android:name="android.app.searchable"></meta-data>
+        </activity>
+        <activity android:name=".MainScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"></action>
+                <category android:name="android.intent.category.LAUNCHER"></category>
+            </intent-filter>
+            <meta-data android:name="android.app.default_searchable" android:value=".SearchScreen"></meta-data>
+        </activity>
+        <activity android:name=".DiscogsReferenceDisplay">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"></action>
+                <category android:name="android.intent.category.DEFAULT"></category>
+                <data android:scheme="de.jollybox.vinylscrobbler" android:host="discogs"></data>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ArtistInfoTab" android:theme="@android:style/Theme.NoTitleBar">
+            <intent-filter>
+                <category android:name="android.intent.category.TAB"></category>
+                <category android:name="android.intent.category.DEFAULT"></category>
+                <action android:name="de.jollybox.vinylscrobbler.VIEW_INFO"></action>
+                <data android:scheme="de.jollybox.vinylscrobbler" android:host="discogs" android:pathPrefix="/artist/"></data>
+            </intent-filter>
+            <meta-data android:name="android.app.default_searchable" android:value=".SearchScreen"></meta-data>
+        </activity>
+        <activity android:name=".ReleaseListTab" android:theme="@android:style/Theme.NoTitleBar">
+            <intent-filter>
+                <category android:name="android.intent.category.TAB"></category>
+                <category android:name="android.intent.category.DEFAULT"></category>
+                <action android:name="de.jollybox.vinylscrobbler.LIST_RELEASES"></action>
+                <data android:scheme="de.jollybox.vinylscrobbler" android:host="discogs" android:pathPrefix="/artist/"></data>
+                <data android:scheme="de.jollybox.vinylscrobbler" android:host="discogs" android:pathPrefix="/master/"></data>
+            </intent-filter>
+            <meta-data android:name="android.app.default_searchable" android:value=".SearchScreen"></meta-data>
+        </activity>
+        <activity android:name=".ReleaseInfoTab">
+            <intent-filter>
+                <category android:name="android.intent.category.TAB"></category>
+                <category android:name="android.intent.category.DEFAULT"></category>
+                <action android:name="de.jollybox.vinylscrobbler.VIEW_INFO"></action>
+                <data android:scheme="de.jollybox.vinylscrobbler" android:pathPrefix="/master/" android:host="discogs"></data>
+                <data android:scheme="de.jollybox.vinylscrobbler" android:pathPrefix="/release/" android:host="discogs"></data>
+            </intent-filter>
+            <meta-data android:name="android.app.default_searchable" android:value=".SearchScreen"></meta-data>
+        </activity>
+        <activity android:name=".TracksTab">
+            <intent-filter>
+                <category android:name="android.intent.category.TAB"></category>
+                <category android:name="android.intent.category.DEFAULT"></category>
+                <action android:name="de.jollybox.vinylscrobbler.LIST_TRACKS"></action>
+                <data android:scheme="de.jollybox.vinylscrobbler" android:pathPrefix="/master/" android:host="discogs"></data>
+                <data android:scheme="de.jollybox.vinylscrobbler" android:pathPrefix="/release/" android:host="discogs"></data>
+            </intent-filter>
+            <meta-data android:name="android.app.default_searchable" android:value=".SearchScreen"></meta-data>
+        </activity>
+        <activity android:name=".SettingsScreen">
+        </activity>
+        <activity android:name=".BarcodeActivity"></activity>
+
+
+    </application>
+</manifest>

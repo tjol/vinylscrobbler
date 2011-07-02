@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent" android:clickable="false" android:focusable="false">
+    <TextView android:id="@+id/track_no"
+    		  android:text="A1"
+    		  android:padding="4sp"
+    		  android:textStyle="bold"
+    		  android:minWidth="35sp"    		  
+    		  android:layout_height="fill_parent"
+    		  android:layout_width="wrap_content"
+    		  android:gravity="center_vertical"
+    		  android:layout_alignParentLeft="true"></TextView>
+    <CheckBox android:id="@+id/track_selected"
+    		  android:layout_alignParentRight="true"
+    		  android:layout_width="wrap_content"
+    		  android:text=" "
+    		  android:layout_height="fill_parent"
+    		  android:gravity="center_vertical"
+    		  android:paddingRight="8dp" android:clickable="false" android:focusable="false"></CheckBox>
+ 	<TextView android:id="@+id/track_duration"
+    		  android:text="1:23"
+    		  android:padding="4sp"
+    		  android:layout_height="fill_parent"
+    		  android:layout_width="wrap_content"
+    		  android:gravity="center_vertical"
+    		  android:layout_toLeftOf="@id/track_selected"></TextView>
+    <TextView android:id="@+id/track_name"
+    		  android:text="Tales of girls and boys and marsupials"
+    		  android:textSize="16sp"
+    		  android:padding="4sp"
+    		  android:layout_height="fill_parent"
+    		  android:layout_width="wrap_content"
+    		  android:gravity="center_vertical"
+    		  android:layout_toRightOf="@id/track_no"
+    		  android:layout_toLeftOf="@id/track_duration"
+    		  ></TextView>
+    
+</RelativeLayout>

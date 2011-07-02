@@ -1,0 +1,12 @@
+Vinyl Scrobbler
+===============
+
+An Android app that will submit tracks from any record found on Discogs
+to Last.fm.
+
+
+Before attempting to build, be sure to create a file res/values/lastfm.xml,
+using the lastfm.xml in this directory as inspiration.
+
+
+Copyright (c) 2011 Thomas Jollans

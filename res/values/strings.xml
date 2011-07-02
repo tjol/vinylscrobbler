@@ -5,7 +5,6 @@
     <string name="error_invalid_data">Cannot comprehend data</string>
     <string name="querying_discogs">Querying Discogs...</string>
     <string name="error_discogs_io">Error querying Discogs.</string>
-    <string name="ok">OK</string>
     <string name="error_lastfm">Last.fm error: %s</string>
     <string name="tab_artist_info">Artist</string>
     <string name="tab_artist_releases">Records</string>
@@ -50,4 +49,7 @@
     <string name="search_hint">Search for record</string>
     <string name="show_master_release">View master release</string>
     <string name="install">Install</string>
+    <string name="go_to_settings">Display Settings</string>
+    <string name="firstrun_settings_info">Welcome to Vinyl Scrobbler. You can log in to your Last.fm account in the settings screen.</string>
+    <string name="login">Login</string>
 </resources>

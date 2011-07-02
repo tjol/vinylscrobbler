@@ -135,7 +135,7 @@ public abstract class DiscogsQuery extends AsyncTask<String, Void, JSONObject> {
 		protected void errorMessage(String message) {
 			(new AlertDialog.Builder(mContext))
 				.setMessage(message)
-				.setNeutralButton(R.string.ok, null).show();
+				.setNeutralButton(android.R.string.ok, null).show();
 		}
 	}
 

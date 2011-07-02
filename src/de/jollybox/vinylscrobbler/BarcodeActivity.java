@@ -62,12 +62,12 @@ public class BarcodeActivity extends Activity {
 						showDialog(DIALOG_MARKET_ERROR);
 					}
 				} })
-				.setNegativeButton("Cancel", cancelListener)
+				.setNegativeButton(android.R.string.cancel, cancelListener)
 				.create();
 		case DIALOG_MARKET_ERROR:
 			return (new AlertDialog.Builder(this))
 				.setMessage(R.string.error_market)
-				.setNeutralButton(R.string.ok, cancelListener)
+				.setNeutralButton(android.R.string.ok, cancelListener)
 				.create();
 		default:
 			return null;

@@ -94,7 +94,7 @@ public class SettingsScreen extends Activity
 			final View login_wd = getLayoutInflater().inflate(R.layout.lastfm_login_dialog, null);
 			return (new AlertDialog.Builder(this))
 						.setView(login_wd)
-						.setPositiveButton("Login", new Dialog.OnClickListener() {
+						.setPositiveButton(R.string.login, new Dialog.OnClickListener() {
 							public void onClick(DialogInterface dialog, int which) {
 								EditText username = (EditText)login_wd.findViewById(R.id.login_username);
 								EditText password = (EditText)login_wd.findViewById(R.id.login_password);
@@ -112,7 +112,7 @@ public class SettingsScreen extends Activity
 								
 							}
 						})
-						.setNegativeButton("Cancel", null)
+						.setNegativeButton(android.R.string.cancel, null)
 						.create();
 		default:
 			return null;

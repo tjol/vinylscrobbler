@@ -4,6 +4,10 @@ Vinyl Scrobbler
 An Android app that will submit tracks from any record found on Discogs
 to Last.fm.
 
+ == Using the source ==
+ 
+This is an Eclipse project. You should be able to import a checkout into
+Eclipse if you have the Android SDK and ADT Eclipse plugin installed.
 
 Before attempting to build, be sure to create a file res/values/lastfm.xml,
 using the lastfm.xml in this directory as inspiration.

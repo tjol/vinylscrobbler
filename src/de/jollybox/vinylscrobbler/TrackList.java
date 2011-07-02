@@ -1,3 +1,11 @@
+/**
+ * Vinyl Scrobbler app by JollyBOX.de
+ *
+ * Copyright (c) 2011	Thomas Jollans
+ * 
+ * Refer to the file COPYING for copying permissions.
+ */
+
 package de.jollybox.vinylscrobbler;
 
 import java.util.ArrayList;

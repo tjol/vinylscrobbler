@@ -79,7 +79,8 @@ public class TracksTab extends ListActivity
 						JSONArray artists = release.getJSONArray("artists");
 						for (int i = 0; i < artists.length(); ++i) {
 							if (i != 0) artiststring.append(" / ");
-							artiststring.append(artists.getJSONObject(i).getString("name"));
+							artiststring.append(Helper.removeNumberFromArtist(
+													artists.getJSONObject(i).getString("name")));
 						}
 						mArtist = artiststring.toString();
 					} else {

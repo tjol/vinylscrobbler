@@ -11,6 +11,8 @@ package de.jollybox.vinylscrobbler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.http.Header;
@@ -59,5 +61,15 @@ public class Helper {
 		}
 		
 		return hexOutputBuilder.toString();
+	}
+	
+	public static String removeNumberFromArtist (String artist) {
+		Pattern numberExp = Pattern.compile("^(.*?)( \\([0-9]+\\))?$");
+		Matcher m = numberExp.matcher(artist);
+		if (m.matches()) {
+			return m.group(1);
+		} else {
+			return artist;
+		}
 	}
 }

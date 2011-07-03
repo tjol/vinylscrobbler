@@ -219,7 +219,7 @@ public class TrackList extends BaseAdapter {
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < mArtists.length; ++i) {
 				if (i != 0)  sb.append(" / ");
-				sb.append(mArtists[i]);
+				sb.append(Helper.removeNumberFromArtist(mArtists[i]));
 			}
 			return sb.toString();
 		}

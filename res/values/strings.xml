@@ -52,4 +52,7 @@
     <string name="go_to_settings">Display Settings</string>
     <string name="firstrun_settings_info">Welcome to Vinyl Scrobbler. You can log in to your Last.fm account in the settings screen.</string>
     <string name="login">Login</string>
+    <string name="new_update">There is a new version of Vinyl Scrobbler available.</string>
+    <string name="download_update">Download</string>
+    <string name="ignore_update">Ignore</string>
 </resources>

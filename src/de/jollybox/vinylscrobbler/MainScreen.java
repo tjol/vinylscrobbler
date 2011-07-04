@@ -8,12 +8,20 @@
 
 package de.jollybox.vinylscrobbler;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import org.apache.http.client.methods.HttpGet;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,6 +33,7 @@ import android.widget.Button;
 public class MainScreen extends Activity {
 	
 	private static final int DIALOG_FIRSTRUN = 1;
+	private static final int DIALOG_UPDATE = 2;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,11 +55,16 @@ public class MainScreen extends Activity {
 			showDialog(DIALOG_FIRSTRUN);
 			prefs.edit().putBoolean("firstrun", false).commit();
 		}
+		
+		if (checkForUpdate()) {
+			showDialog(DIALOG_UPDATE);
+		}
 	}
 	
 	@Override
 	protected Dialog onCreateDialog(int id) {
-		if (id == DIALOG_FIRSTRUN) {
+		switch(id) {
+		case DIALOG_FIRSTRUN:
 			return (new AlertDialog.Builder(this))
 						.setMessage(R.string.firstrun_settings_info)
 						.setPositiveButton(R.string.go_to_settings, new DialogInterface.OnClickListener() {
@@ -61,7 +75,19 @@ public class MainScreen extends Activity {
 						})
 						.setNegativeButton(android.R.string.cancel, null)
 						.create();
-		} else {
+		case DIALOG_UPDATE:
+			return (new AlertDialog.Builder(this))
+						.setMessage(R.string.new_update)
+						.setPositiveButton(R.string.download_update, new DialogInterface.OnClickListener() {							
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
+											  "http://code.jollybox.de/pub/vinylscrobbler/VinylScrobbler-latest.apk")));
+							}
+						})
+						.setNegativeButton(R.string.ignore_update, null)
+						.create();
+		default:
 			return super.onCreateDialog(id);
 		}
 	}
@@ -123,5 +149,27 @@ public class MainScreen extends Activity {
 		}
 	};
 	
-
+	private boolean checkForUpdate() {
+		try {
+			PackageInfo pinfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+			int myVersionCode = pinfo.versionCode;
+			
+			
+			InputStream versionInfoStream =
+				Helper.doRequest(this, new HttpGet("http://code.jollybox.de/pub/vinylscrobbler/version"));
+			
+			String currentVersionString = new BufferedReader(
+					new InputStreamReader(versionInfoStream)).readLine();
+			
+			int currentVersionCode = Integer.parseInt(currentVersionString);
+			
+			if (currentVersionCode > myVersionCode)
+				return true;
+			else
+				return false;
+			
+		} catch (Exception e) {
+			return false;
+		}
+	}
 }

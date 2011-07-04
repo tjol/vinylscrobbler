@@ -65,11 +65,20 @@ public class Helper {
 	
 	public static String removeNumberFromArtist (String artist) {
 		Pattern numberExp = Pattern.compile("^(.*?)( \\([0-9]+\\))?$");
+		Pattern theExp = Pattern.compile("^(.*?)(, The)$");
+		
 		Matcher m = numberExp.matcher(artist);
 		if (m.matches()) {
-			return m.group(1);
+			artist = m.group(1);
+		} 
+		
+		m = theExp.matcher(artist);
+		if (m.matches()) {
+			return "The " + m.group(1);
 		} else {
 			return artist;
 		}
 	}
+	
+	
 }

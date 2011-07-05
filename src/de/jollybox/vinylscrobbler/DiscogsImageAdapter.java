@@ -11,6 +11,8 @@ package de.jollybox.vinylscrobbler;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import de.jollybox.vinylscrobbler.util.ImageDownloader;
+
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;

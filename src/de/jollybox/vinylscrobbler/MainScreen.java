@@ -14,6 +14,8 @@ import java.io.InputStreamReader;
 
 import org.apache.http.client.methods.HttpGet;
 
+import de.jollybox.vinylscrobbler.util.Helper;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;

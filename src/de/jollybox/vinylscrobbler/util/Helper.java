@@ -6,7 +6,7 @@
  * Refer to the file COPYING for copying permissions.
  */
 
-package de.jollybox.vinylscrobbler;
+package de.jollybox.vinylscrobbler.util;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +21,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
+
+import de.jollybox.vinylscrobbler.R;
 
 import android.content.Context;
 import android.content.res.Resources;

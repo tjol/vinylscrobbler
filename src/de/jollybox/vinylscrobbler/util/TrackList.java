@@ -6,7 +6,7 @@
  * Refer to the file COPYING for copying permissions.
  */
 
-package de.jollybox.vinylscrobbler;
+package de.jollybox.vinylscrobbler.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +17,8 @@ import java.util.regex.Pattern;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import de.jollybox.vinylscrobbler.R;
 
 import android.content.Context;
 import android.graphics.Typeface;

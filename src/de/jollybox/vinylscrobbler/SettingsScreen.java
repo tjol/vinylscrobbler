@@ -10,6 +10,9 @@ package de.jollybox.vinylscrobbler;
 
 import java.util.Map;
 
+import de.jollybox.vinylscrobbler.util.Helper;
+import de.jollybox.vinylscrobbler.util.Lastfm;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;

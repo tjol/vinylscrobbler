@@ -6,7 +6,7 @@
  * Refer to the file COPYING for copying permissions.
  */
 
-package de.jollybox.vinylscrobbler;
+package de.jollybox.vinylscrobbler.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,6 +19,8 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+
+import de.jollybox.vinylscrobbler.R;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;

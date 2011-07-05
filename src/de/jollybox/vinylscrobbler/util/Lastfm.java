@@ -6,7 +6,7 @@
  * Refer to the file COPYING for copying permissions.
  */
 
-package de.jollybox.vinylscrobbler;
+package de.jollybox.vinylscrobbler.util;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,6 +31,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import de.jollybox.vinylscrobbler.R;
 
 import android.content.Context;
 import android.content.ContextWrapper;

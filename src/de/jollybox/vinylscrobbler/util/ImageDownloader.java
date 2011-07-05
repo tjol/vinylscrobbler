@@ -6,7 +6,7 @@
  * Refer to the file COPYING for copying permissions.
  */
 
-package de.jollybox.vinylscrobbler;
+package de.jollybox.vinylscrobbler.util;
 
 import java.io.IOException;
 import java.io.InputStream;

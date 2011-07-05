@@ -12,6 +12,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.jollybox.vinylscrobbler.util.DiscogsQuery;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;

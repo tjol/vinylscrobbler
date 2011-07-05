@@ -15,6 +15,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.jollybox.vinylscrobbler.util.DiscogsQuery;
+import de.jollybox.vinylscrobbler.util.Helper;
+import de.jollybox.vinylscrobbler.util.Lastfm;
+import de.jollybox.vinylscrobbler.util.TrackList;
+
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Intent;

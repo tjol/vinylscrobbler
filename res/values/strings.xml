@@ -56,4 +56,5 @@
     <string name="download_update">Download</string>
     <string name="ignore_update">Ignore</string>
     <string name="info_format">Format:</string>
+    <string name="master_release">Master release</string>
 </resources>

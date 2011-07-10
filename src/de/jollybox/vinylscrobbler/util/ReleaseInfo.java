@@ -361,4 +361,67 @@ public class ReleaseInfo implements Cloneable {
 			return sb.toString();
 		}
 	}
+	
+	public static class ReleaseSummary {
+		protected int mId = -1;
+		protected String mThumbURI;
+		protected String mFormat = null;
+		protected String mTitle = null;
+		protected boolean mIsMaster;
+		protected String mCountry = null;
+		protected String mLabel = null;
+		
+		protected ReleaseSummary () { super(); }
+		
+		public String getThumbURI() {
+			return mThumbURI;
+		}
+		public String getFormat() {
+			if (! mIsMaster) {
+				return mFormat;
+			} else {
+				throw new RuntimeException("This is a master release.");
+			}
+		}
+		public String getTitle() {
+			return mTitle;
+		}
+		public boolean isMaster() {
+			return mIsMaster;
+		}
+		public String getCountry() {
+			if (! mIsMaster) {
+				return mCountry;
+			} else {
+				throw new RuntimeException("This is a master release.");
+			}
+		}
+		public String getLabel() {
+			if (! mIsMaster) {
+				return mLabel;
+			} else {
+				throw new RuntimeException("This is a master release.");
+			}
+		}
+		public int getId() {
+			return mId;
+		}
+		
+		public static List<ReleaseSummary> fromJSONArray (final JSONArray arr) throws JSONException {
+			List<ReleaseSummary> rv = new ArrayList<ReleaseSummary>(arr.length());
+			for (int i = 0; i < arr.length(); ++i) {
+				JSONObject desc = arr.getJSONObject(i);
+				ReleaseSummary s = new ReleaseSummary();
+				s.mIsMaster = desc.has("type") && desc.getString("type").equals("master");
+				s.mId = desc.getInt("id");
+				s.mTitle = desc.getString("title");
+				s.mCountry = desc.optString("country", null);
+				s.mFormat = desc.optString("format");
+				s.mLabel = desc.optString("label", null);
+				s.mThumbURI = desc.optString("thumb", null);
+				rv.add(s);
+			}
+			return rv;
+		}
+	}
 }

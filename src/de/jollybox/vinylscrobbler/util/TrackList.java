@@ -50,12 +50,12 @@ public class TrackList extends BaseAdapter {
 			String title = track.getString("title");
 			String duration = track.getString("duration");
 			JSONArray artists_j;
-			String artists[] = null;
+			List<ReleaseInfo.Credit> artists = null;
 			if ((artists_j = track.optJSONArray("artists")) != null) {
 				int nArtists = artists_j.length();
-				artists = new String[nArtists];
+				artists = new ArrayList<ReleaseInfo.Credit>(nArtists);
 				for (int j = 0; j < nArtists; ++j) {
-					artists[j] = artists_j.getJSONObject(j).getString("name");
+					artists.add(new ReleaseInfo.Credit(artists_j.getJSONObject(j)));
 				}
 			}
 			
@@ -194,10 +194,10 @@ public class TrackList extends BaseAdapter {
 		private final String mDuration;
 		private final String mTitle;
 		private final String mPosition;
-		private final String[] mArtists;
+		private final List<ReleaseInfo.Credit> mArtists;
 		private boolean mSelected;
 		
-		protected Track (String position, String title, String duration, String[] artists) {
+		protected Track (String position, String title, String duration, List<ReleaseInfo.Credit> artists) {
 			if (title == null) {
 				throw new IllegalArgumentException("Track title must not be null");
 			}
@@ -207,7 +207,7 @@ public class TrackList extends BaseAdapter {
 			if (artists != null) { 
 				mArtists = artists;
 			} else {
-				mArtists = new String[0];
+				mArtists = new ArrayList<ReleaseInfo.Credit>();
 			}
 			
 			mSelected = false;
@@ -215,18 +215,13 @@ public class TrackList extends BaseAdapter {
 		
 		public String   getDuration () { return mDuration; }
 		public String   getTitle () { return mTitle; }
-		public String[] getArtists () { return mArtists; }
+		public List<ReleaseInfo.Credit> getArtists () { return new ArrayList<ReleaseInfo.Credit>(mArtists); }
 		public String   getPosition () { return mPosition; }
 		public String	getArtistString () {
-			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < mArtists.length; ++i) {
-				if (i != 0)  sb.append(" / ");
-				sb.append(Helper.removeNumberFromArtist(mArtists[i]));
-			}
-			return sb.toString();
+			return ReleaseInfo.Credit.artistsString(mArtists);
 		}
 		public String   getTitleWithArtists () {
-			if (mArtists.length == 0) {
+			if (mArtists.size() == 0) {
 				return mTitle;
 			} else {
 				StringBuilder sb = new StringBuilder();

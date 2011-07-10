@@ -11,13 +11,12 @@ package de.jollybox.vinylscrobbler;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.jollybox.vinylscrobbler.util.DiscogsQuery;
-import de.jollybox.vinylscrobbler.util.Helper;
 import de.jollybox.vinylscrobbler.util.Lastfm;
+import de.jollybox.vinylscrobbler.util.ReleaseInfo;
 import de.jollybox.vinylscrobbler.util.TrackList;
 
 import android.app.AlertDialog;
@@ -45,8 +44,7 @@ public class TracksTab extends ListActivity
 	private Lastfm mLastfm;
 	private Button mScrobbleBtn;
 	private Resources res;
-	private String mTitle;
-	private String mArtist;
+	private ReleaseInfo mRelease;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -67,39 +65,16 @@ public class TracksTab extends ListActivity
 		DiscogsQuery query = new DiscogsQuery.WithAlertDialog(this) {
 			@Override
 			protected void onResult(JSONObject result) {
-				JSONObject release;
-				
 				try {
-					JSONObject resp = result.getJSONObject("resp");
-					if (resp.has("master")) {
-						release = resp.getJSONObject("master");
-						mTitle = release.getJSONArray("versions").getJSONObject(0).getString("title");
-					} else {
-						release = resp.getJSONObject("release");
-						mTitle = release.getString("title");
-					}
-					
-					if (release.has("artists")) {
-						StringBuilder artiststring = new StringBuilder();
-						JSONArray artists = release.getJSONArray("artists");
-						for (int i = 0; i < artists.length(); ++i) {
-							if (i != 0) artiststring.append(" / ");
-							artiststring.append(Helper.removeNumberFromArtist(
-													artists.getJSONObject(i).getString("name")));
-						}
-						mArtist = artiststring.toString();
-					} else {
-						mArtist = "Unknown";
-					}
-					
-					JSONArray tracklist_json = release.getJSONArray("tracklist");
-					mTracks = new TrackList(TracksTab.this, tracklist_json);
-					ListView list = getListView();
-					setListAdapter(mTracks);
-					list.setOnItemClickListener(TracksTab.this);
+					mRelease = ReleaseInfo.fromJSON(mContext, result);
 				} catch (JSONException json_exc) {
 					errorMessage(res.getString(R.string.error_invalid_data));
+					return;
 				}
+				mTracks = mRelease.getTracks();
+				ListView list = getListView();
+				setListAdapter(mTracks);
+				list.setOnItemClickListener(TracksTab.this);
 			}
 		};
 		
@@ -212,7 +187,9 @@ public class TracksTab extends ListActivity
 			times[i] = current_time;
 		}
 		
-		mLastfm.scrobbleTracks(scrobble_these, times, mTitle, mArtist, this, this);
+		mLastfm.scrobbleTracks(scrobble_these, times,
+							   mRelease.getTitle(), mRelease.getArtistString(),
+							   this, this);
 		
 		return true;
 	}

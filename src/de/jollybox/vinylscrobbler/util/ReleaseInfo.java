@@ -44,6 +44,10 @@ public class ReleaseInfo implements Cloneable {
 			new WeakHashMap<JSONObject, SoftReference<ReleaseInfo>>();
 	
 	public static ReleaseInfo fromJSON(Context context, JSONObject discogsResp) throws JSONException {	
+		if (discogsResp.has("resp")) {
+			discogsResp = discogsResp.getJSONObject("resp");
+		}
+		
 		ReleaseInfo release;
 		synchronized(cCache) {
 			if (cCache.containsKey(discogsResp)) {
@@ -51,10 +55,12 @@ public class ReleaseInfo implements Cloneable {
 					try {
 						release = (ReleaseInfo) release.clone();
 						release.mContext = context;
+						// cache the new object: it's younger, so it may stay around longer.
+						cCache.put(discogsResp, new SoftReference<ReleaseInfo>(release));
+						return release;
 					} catch (CloneNotSupportedException e) {
 						throw new RuntimeException(e);
 					}
-					return release;
 				} else {
 					cCache.remove(discogsResp);
 				}
@@ -194,6 +200,10 @@ public class ReleaseInfo implements Cloneable {
 	public List<Credit> getArtists() {
 		return new ArrayList<Credit>(mArtists);
 	}
+	
+	public String getArtistString() {
+		return Credit.artistsString(mArtists);
+	}
 
 	public List<String> getGenres() {
 		return new ArrayList<String>(mGenres);
@@ -291,6 +301,18 @@ public class ReleaseInfo implements Cloneable {
 		
 		public String getTracks() {
 			return mTracks;
+		}
+		
+		public static String artistsString(Iterable<Credit> artists) {
+			StringBuilder sb = new StringBuilder();
+			boolean first = true;
+			for (Credit c : artists) {
+				if (!first) sb.append(" / ");
+				else first = false;
+				
+				sb.append(c.getArtist());
+			}
+			return sb.toString();
 		}
 	}
 }

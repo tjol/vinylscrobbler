@@ -51,139 +51,139 @@ public class ReleaseInfoTab extends Activity {
 				StringBuilder ht;
 				
 				try {
-					JSONObject resp = result.getJSONObject("resp");
-					release = ReleaseInfo.fromJSON(mContext, resp);
-					title.setText(release.getTitle());
-					
-					ArrayAdapter<CharSequence> items = new ArrayAdapter<CharSequence>(mContext, R.layout.textlistitem) {
-						@Override
-						public View getView(int position, View v, ViewGroup parent) {
-							if (v == null) {
-								v = getLayoutInflater().inflate(R.layout.textlistitem, parent, false);
-							}
-							TextView tv = (TextView)v;
-							tv.setMovementMethod(LinkMovementMethod.getInstance());
-							tv.setText(getItem(position));
-							return v;
+					release = ReleaseInfo.fromJSON(mContext, result);
+				} catch (JSONException json_exc) {
+					title.setText(R.string.title_error);
+					errorMessage(res.getString(R.string.error_invalid_data));
+					return;
+				}
+				
+				title.setText(release.getTitle());
+				
+				ArrayAdapter<CharSequence> items = new ArrayAdapter<CharSequence>(mContext, R.layout.textlistitem) {
+					@Override
+					public View getView(int position, View v, ViewGroup parent) {
+						if (v == null) {
+							v = getLayoutInflater().inflate(R.layout.textlistitem, parent, false);
 						}
-					};
-					
-					List<ReleaseInfo.Credit> artists = release.getArtists();
-					if (artists.size() > 0) {
-						ht = new StringBuilder();
-						ht.append(res.getString(R.string.info_artist));
-						boolean first = true;
-						for (ReleaseInfo.Credit artist : artists) {
-							if (first) first = false;
-							else ht.append(", ");
+						TextView tv = (TextView)v;
+						tv.setMovementMethod(LinkMovementMethod.getInstance());
+						tv.setText(getItem(position));
+						return v;
+					}
+				};
+				
+				List<ReleaseInfo.Credit> artists = release.getArtists();
+				if (artists.size() > 0) {
+					ht = new StringBuilder();
+					ht.append(res.getString(R.string.info_artist));
+					boolean first = true;
+					for (ReleaseInfo.Credit artist : artists) {
+						if (first) first = false;
+						else ht.append(", ");
 
-							ht.append(String.format(" <a href=\"%s://%s/artist/%s\">%s</a>",
-									res.getString(R.string.uri_scheme),
-									res.getString(R.string.authority_discogs),
-									Uri.encode(artist.getCanonicalArtistName()),
-									artist.getArtist()));
-						}
-						items.add(Html.fromHtml(ht.toString()));
-					}
-					
-					List<String> genres = release.getGenres();
-					if (genres.size() > 0) {
-						ht = new StringBuilder();
-						ht.append(res.getString(R.string.info_genres) + " ");
-						boolean first = true;
-						for (String genre : genres) {
-							if (first) first = false;
-							else ht.append(", ");
-							
-							ht.append(genre);
-						}
-						items.add(ht.toString());
-					}
-					
-					List<String> styles = release.getStyles();
-					if (styles.size() > 0) {
-						ht = new StringBuilder();
-						ht.append(res.getString(R.string.info_styles) + " ");
-						boolean first = true;
-						for (String style : styles) {
-							if (first) first = false;
-							else ht.append(", ");
-							
-							ht.append(style);
-						}
-						items.add(ht.toString());
-					}
-					
-					String when = release.getDateString();
-					if (when != null) {
-						items.add(res.getString(R.string.info_released) + " " + when);
-					}
-					
-					List<ReleaseInfo.CatalogEntry> labels = release.getCatalogEntries();
-					if (labels.size() > 0) {
-						StringBuilder ht_l = new StringBuilder();
-						ht_l.append(res.getString(R.string.info_label) + " ");
-						StringBuilder ht_n = new StringBuilder();
-						ht_n.append(res.getString(R.string.info_catno) + " ");
-						
-						boolean first = true;
-						for (ReleaseInfo.CatalogEntry e : labels) {
-							if (first) first = false;
-							else {
-								ht_l.append(", ");
-								ht_n.append(", ");
-							}
-							
-							ht_l.append(e.getLabel());
-							ht_n.append(e.getCatalogNumber());
-						}
-						
-						items.add(ht_l.toString());
-						items.add(ht_n.toString());
-					}
-					
-					String country, notes;
-					if ((country = release.getCountry()) != null) {
-						items.add(res.getString(R.string.info_country) + " " + country);
-					}
-					
-					List<ReleaseInfo.Credit> extraArtists = release.getExtraArtists();
-					for (ReleaseInfo.Credit credit : extraArtists) {
-						String creditHtml = String.format("%s: <a href=\"%s://%s/artist/%s\">%s</a>",
-												credit.getRole(),
-												res.getString(R.string.uri_scheme),
-												res.getString(R.string.authority_discogs),
-												Uri.encode(credit.getCanonicalArtistName()),
-												credit.getArtist());
-						items.add(Html.fromHtml(creditHtml));
-					}
-					
-					if ((notes = release.getNotes()) != null) {
-						items.add(notes);
-					}
-					
-					if (!release.isMaster() && release.getMasterId() != -1) {
-						items.add(Html.fromHtml(String.format("<a href=\"%s://%s/master/%s\">%s</a>",
+						ht.append(String.format(" <a href=\"%s://%s/artist/%s\">%s</a>",
 								res.getString(R.string.uri_scheme),
 								res.getString(R.string.authority_discogs),
-								release.getMasterId(),
-								res.getString(R.string.show_master_release)
-								)));
+								Uri.encode(artist.getCanonicalArtistName()),
+								artist.getArtist()));
+					}
+					items.add(Html.fromHtml(ht.toString()));
+				}
+				
+				List<String> genres = release.getGenres();
+				if (genres.size() > 0) {
+					ht = new StringBuilder();
+					ht.append(res.getString(R.string.info_genres) + " ");
+					boolean first = true;
+					for (String genre : genres) {
+						if (first) first = false;
+						else ht.append(", ");
+						
+						ht.append(genre);
+					}
+					items.add(ht.toString());
+				}
+				
+				List<String> styles = release.getStyles();
+				if (styles.size() > 0) {
+					ht = new StringBuilder();
+					ht.append(res.getString(R.string.info_styles) + " ");
+					boolean first = true;
+					for (String style : styles) {
+						if (first) first = false;
+						else ht.append(", ");
+						
+						ht.append(style);
+					}
+					items.add(ht.toString());
+				}
+				
+				String when = release.getDateString();
+				if (when != null) {
+					items.add(res.getString(R.string.info_released) + " " + when);
+				}
+				
+				List<ReleaseInfo.CatalogEntry> labels = release.getCatalogEntries();
+				if (labels.size() > 0) {
+					StringBuilder ht_l = new StringBuilder();
+					ht_l.append(res.getString(R.string.info_label) + " ");
+					StringBuilder ht_n = new StringBuilder();
+					ht_n.append(res.getString(R.string.info_catno) + " ");
+					
+					boolean first = true;
+					for (ReleaseInfo.CatalogEntry e : labels) {
+						if (first) first = false;
+						else {
+							ht_l.append(", ");
+							ht_n.append(", ");
+						}
+						
+						ht_l.append(e.getLabel());
+						ht_n.append(e.getCatalogNumber());
 					}
 					
-					ListView list = (ListView)findViewById(R.id.infos);
-					list.setAdapter(items);
-					list.setItemsCanFocus(true);
-					
-					DiscogsImageAdapter gallery = release.getGallery();
-					if (gallery != null) {
-						Gallery gallery_widget = (Gallery)findViewById(R.id.images);
-						gallery_widget.setAdapter(gallery);
-					}
-					
-				} catch (JSONException json_exc) {
-					title.setText("Error");
-					errorMessage("Cannot comprehend data");
+					items.add(ht_l.toString());
+					items.add(ht_n.toString());
+				}
+				
+				String country, notes;
+				if ((country = release.getCountry()) != null) {
+					items.add(res.getString(R.string.info_country) + " " + country);
+				}
+				
+				List<ReleaseInfo.Credit> extraArtists = release.getExtraArtists();
+				for (ReleaseInfo.Credit credit : extraArtists) {
+					String creditHtml = String.format("%s: <a href=\"%s://%s/artist/%s\">%s</a>",
+											credit.getRole(),
+											res.getString(R.string.uri_scheme),
+											res.getString(R.string.authority_discogs),
+											Uri.encode(credit.getCanonicalArtistName()),
+											credit.getArtist());
+					items.add(Html.fromHtml(creditHtml));
+				}
+				
+				if ((notes = release.getNotes()) != null) {
+					items.add(notes);
+				}
+				
+				if (!release.isMaster() && release.getMasterId() != -1) {
+					items.add(Html.fromHtml(String.format("<a href=\"%s://%s/master/%s\">%s</a>",
+							res.getString(R.string.uri_scheme),
+							res.getString(R.string.authority_discogs),
+							release.getMasterId(),
+							res.getString(R.string.show_master_release)
+							)));
+				}
+				
+				ListView list = (ListView)findViewById(R.id.infos);
+				list.setAdapter(items);
+				list.setItemsCanFocus(true);
+				
+				DiscogsImageAdapter gallery = release.getGallery();
+				if (gallery != null) {
+					Gallery gallery_widget = (Gallery)findViewById(R.id.images);
+					gallery_widget.setAdapter(gallery);
 				}
 			}
 		};

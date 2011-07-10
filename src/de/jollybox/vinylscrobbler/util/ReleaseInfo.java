@@ -22,6 +22,7 @@ import android.content.Context;
 import de.jollybox.vinylscrobbler.DiscogsImageAdapter;
 
 public class ReleaseInfo implements Cloneable {
+	private int mId;
 	private String mTitle;
 	private TrackList mTracks;
 	private boolean mIsMaster;
@@ -100,6 +101,8 @@ public class ReleaseInfo implements Cloneable {
 			mTitle = r.getString("title");
 			mMasterId = r.optInt("master_id", -1);
 		}
+		
+		mId = r.getInt("id");
 		
 		if (r.has("formats")) {
 			JSONArray formats = r.getJSONArray("formats");
@@ -193,6 +196,9 @@ public class ReleaseInfo implements Cloneable {
 		mTracks = new TrackList(mContext, r.getJSONArray("tracklist"));
 	}
 	
+	public int getId() {
+		return mId;
+	}
 
 	public String getTitle() {
 		return mTitle;

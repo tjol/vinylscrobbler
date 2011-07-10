@@ -52,7 +52,7 @@ public class ReleaseInfoTab extends Activity {
 				
 				try {
 					JSONObject resp = result.getJSONObject("resp");
-					release = new ReleaseInfo(mContext, resp);
+					release = ReleaseInfo.fromJSON(mContext, resp);
 					title.setText(release.getTitle());
 					
 					ArrayAdapter<CharSequence> items = new ArrayAdapter<CharSequence>(mContext, R.layout.textlistitem) {

@@ -11,8 +11,9 @@ package de.jollybox.vinylscrobbler.util;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -49,7 +50,8 @@ public abstract class DiscogsQuery extends AsyncTask<String, Void, JSONObject> {
 	
 	protected abstract void errorMessage (String message);
 	
-	protected static Map<String, JSONObject> cCache = new ConcurrentHashMap<String, JSONObject>();
+	protected static Map<String, JSONObject> cCache = new HashMap<String, JSONObject>();
+	protected static Map<String, ReentrantLock> cDownloading = new HashMap<String, ReentrantLock>();
 
 	@Override
 	protected void onPreExecute() {
@@ -62,18 +64,40 @@ public abstract class DiscogsQuery extends AsyncTask<String, Void, JSONObject> {
 	protected JSONObject doInBackground(String... args) {
 		String query_string = args[0];
 		JSONObject result;
-		// check cache.
-		if (mUseCache && (result = cCache.get(query_string)) != null) {
-			return result;
-		}
-		// TODO: If it's being downloaded atm, wait.
+		ReentrantLock lock = null;
 		
-		// not cached. fetch.
-		Resources res = mContext.getResources();
-		String url = res.getString(R.string.discogs_api_root) + query_string;
-
-		HttpUriRequest request = new HttpGet(url);		
-		try {
+		// caching magic:
+		if (mUseCache) {
+			// is it being downloaded atm?
+			synchronized (cDownloading) {
+				if ((lock = cDownloading.get(query_string)) != null) {
+					// wait.
+					lock.lock();
+					// great!
+				}
+			}
+		
+			// check cache.
+			synchronized (cCache) {
+				if ((result = cCache.get(query_string)) != null) {
+					return result;
+				}
+			}
+		}
+		
+		// not cached. Announce in cDownloading, and fetch.
+		synchronized (cDownloading) {
+			lock = new ReentrantLock();
+			lock.lock();
+			cDownloading.put(query_string, lock);
+		}
+		try { // make sure the lock is unlocked in `finally'
+		
+			Resources res = mContext.getResources();
+			String url = res.getString(R.string.discogs_api_root) + query_string;
+	
+			HttpUriRequest request = new HttpGet(url);		
+		
 			BufferedReader reader = new BufferedReader(
 					new InputStreamReader(Helper.doRequest(mContext, request), "UTF-8"));
 			StringBuilder sb = new StringBuilder();
@@ -86,7 +110,9 @@ public abstract class DiscogsQuery extends AsyncTask<String, Void, JSONObject> {
 			try {
 				String json_data = sb.toString();
 				result = (JSONObject) (new JSONTokener(json_data)).nextValue();
-				cCache.put(query_string, result);
+				synchronized (cCache) {
+					cCache.put(query_string, result);
+				}
 				return result;
 			} catch (JSONException json_exc) {
 				mError = res.getString(R.string.error_invalid_data);
@@ -98,6 +124,9 @@ public abstract class DiscogsQuery extends AsyncTask<String, Void, JSONObject> {
 		} catch (IOException io_exc) {
 			mError = res.getString(R.string.error_discogs_io);
 			return null;
+		} finally {
+			lock.unlock();
+			cDownloading.remove(query_string);
 		}
 	}
 	

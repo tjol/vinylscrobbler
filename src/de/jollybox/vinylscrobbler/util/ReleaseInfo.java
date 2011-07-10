@@ -8,8 +8,10 @@
 
 package de.jollybox.vinylscrobbler.util;
 
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.WeakHashMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,7 +21,7 @@ import android.content.Context;
 
 import de.jollybox.vinylscrobbler.DiscogsImageAdapter;
 
-public class ReleaseInfo {
+public class ReleaseInfo implements Cloneable {
 	private String mTitle;
 	private TrackList mTracks;
 	private boolean mIsMaster;
@@ -38,7 +40,32 @@ public class ReleaseInfo {
 	
 	private Context mContext;
 	
-	public ReleaseInfo (Context context, JSONObject discogsResp) throws JSONException {
+	private static WeakHashMap<JSONObject, SoftReference<ReleaseInfo>> cCache = 
+			new WeakHashMap<JSONObject, SoftReference<ReleaseInfo>>();
+	
+	public static ReleaseInfo fromJSON(Context context, JSONObject discogsResp) throws JSONException {	
+		ReleaseInfo release;
+		synchronized(cCache) {
+			if (cCache.containsKey(discogsResp)) {
+				if ((release = cCache.get(discogsResp).get()) != null) {
+					try {
+						release = (ReleaseInfo) release.clone();
+						release.mContext = context;
+					} catch (CloneNotSupportedException e) {
+						throw new RuntimeException(e);
+					}
+					return release;
+				} else {
+					cCache.remove(discogsResp);
+				}
+			}
+		}
+		release = new ReleaseInfo(context, discogsResp);
+		cCache.put(discogsResp, new SoftReference<ReleaseInfo>(release));
+		return release;
+	}
+	
+	private ReleaseInfo (Context context, JSONObject discogsResp) throws JSONException {
 		int i;
 		
 		mContext = context;

@@ -31,7 +31,6 @@ public final class ImageDownloader {
 	 */
 	private static Map<ImageView, DownloadTask> cDownloads = new WeakHashMap<ImageView, DownloadTask>();
 	private static Map<String, DownloadTask> cUrlDownloads = new ConcurrentHashMap<String, DownloadTask>();
-	// TODO: implement specialised cache class
 	private static Map<String, SoftReference<Bitmap>> cCache = new ConcurrentHashMap<String, SoftReference<Bitmap>>();
 	
 	private Context mContext;

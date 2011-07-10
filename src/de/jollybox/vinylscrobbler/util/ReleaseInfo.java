@@ -33,6 +33,7 @@ public class ReleaseInfo implements Cloneable {
 	private List<String> mStyles;
 	private String mDateString;
 	private List<CatalogEntry> mCatalogEntries; // labels
+	private List<String> mFormatStrings;
 	private String mCountry;
 	private List<Credit> mExtraArtists;
 	private String mNotes;
@@ -100,7 +101,31 @@ public class ReleaseInfo implements Cloneable {
 			mMasterId = r.optInt("master_id", -1);
 		}
 		
-		// TODO: formats
+		if (r.has("formats")) {
+			JSONArray formats = r.getJSONArray("formats");
+			mFormatStrings = new ArrayList<String>(formats.length());
+			for (i = 0; i < formats.length(); ++i) {
+				JSONObject jfmt = formats.getJSONObject(i);
+				StringBuilder fmt = new StringBuilder();
+				fmt.append(String.format("%s× %s",
+										 jfmt.getString("qty"),
+										 jfmt.getString("name")));
+				if (jfmt.has("descriptions")) {
+					JSONArray descriptions = jfmt.getJSONArray("descriptions");
+					if (descriptions.length() > 0) {
+						fmt.append(" (");
+						for (int j = 0; j < descriptions.length(); ++j) {
+							if (j != 0) fmt.append(", ");
+							fmt.append(descriptions.getString(j));
+						}
+						fmt.append(")");
+					}
+				}
+				mFormatStrings.add(fmt.toString());
+			}
+		} else {
+			mFormatStrings = new ArrayList<String>();
+		}
 		
 		if (r.has("artists")) {
 			JSONArray artists = r.getJSONArray("artists");
@@ -211,6 +236,27 @@ public class ReleaseInfo implements Cloneable {
 
 	public List<String> getStyles() {
 		return new ArrayList<String>(mStyles);
+	}
+	
+	public List<String> getFormatStrings() {
+		if (mIsMaster) {
+			throw new RuntimeException("This is a master release.");
+		}
+		return new ArrayList<String>(mFormatStrings);
+	}
+	
+	public String getFormatString() {
+		if (mIsMaster) {
+			throw new RuntimeException("This is a master release.");
+		}
+		StringBuilder retv = new StringBuilder();
+		boolean first = true;
+		for (String f : mFormatStrings) {
+			if (!first) retv.append(", ");
+			else		first = false;
+			retv.append(f);
+		}
+		return retv.toString();
 	}
 
 	public String getDateString() {

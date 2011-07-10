@@ -76,7 +76,7 @@ public class ReleaseInfoTab extends Activity {
 				List<ReleaseInfo.Credit> artists = release.getArtists();
 				if (artists.size() > 0) {
 					ht = new StringBuilder();
-					ht.append(res.getString(R.string.info_artist));
+					ht.append(res.getString(R.string.info_artist) + " ");
 					boolean first = true;
 					for (ReleaseInfo.Credit artist : artists) {
 						if (first) first = false;
@@ -89,6 +89,11 @@ public class ReleaseInfoTab extends Activity {
 								artist.getArtist()));
 					}
 					items.add(Html.fromHtml(ht.toString()));
+				}
+				
+				if (!release.isMaster()) {
+					items.add(String.format("%s %s", res.getString(R.string.info_format),
+													 release.getFormatString()));
 				}
 				
 				List<String> genres = release.getGenres();

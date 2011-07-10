@@ -55,4 +55,5 @@
     <string name="new_update">There is a new version of Vinyl Scrobbler available.</string>
     <string name="download_update">Download</string>
     <string name="ignore_update">Ignore</string>
+    <string name="info_format">Format:</string>
 </resources>

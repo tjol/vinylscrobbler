@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.jollybox.vinylscrobbler.util.DiscogsQuery;
+import de.jollybox.vinylscrobbler.util.HistoryDatabase;
 import de.jollybox.vinylscrobbler.util.Lastfm;
 import de.jollybox.vinylscrobbler.util.ReleaseInfo;
 import de.jollybox.vinylscrobbler.util.TrackList;
@@ -190,6 +191,8 @@ public class TracksTab extends ListActivity
 		mLastfm.scrobbleTracks(scrobble_these, times,
 							   mRelease.getTitle(), mRelease.getArtistString(),
 							   this, this);
+		HistoryDatabase history = new HistoryDatabase(this);
+		history.rememberRelease(mRelease.getSummary());
 		
 		return true;
 	}

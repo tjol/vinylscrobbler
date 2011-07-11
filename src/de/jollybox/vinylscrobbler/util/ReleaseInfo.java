@@ -196,6 +196,20 @@ public class ReleaseInfo implements Cloneable {
 		mTracks = new TrackList(mContext, r.getJSONArray("tracklist"));
 	}
 	
+	public ReleaseSummary getSummary() {
+		String label = null;
+		if (mCatalogEntries != null && mCatalogEntries.size() > 0)
+			label = mCatalogEntries.get(0).mLabel;
+		String thumb = null;
+		try {
+			if (mImages != null && mImages.length() > 0)
+				thumb = mImages.getJSONObject(0).optString("uri150", null);
+		} catch (JSONException e) {
+			// no picture. That's all.
+		}
+		return new ReleaseSummary(mId, mIsMaster, mTitle, getFormatString(), label, mCountry, thumb);
+	}
+	
 	public int getId() {
 		return mId;
 	}
@@ -379,6 +393,17 @@ public class ReleaseInfo implements Cloneable {
 		
 		protected ReleaseSummary () { super(); }
 		
+		public ReleaseSummary (int id, boolean isMaster, String title, String format,
+							   String label, String country, String thumbUri) {
+			mId = id;
+			mIsMaster = isMaster;
+			mTitle = title;
+			mFormat = format;
+			mLabel = label;
+			mCountry = country;
+			mThumbURI = thumbUri;
+		}
+		
 		public String getThumbURI() {
 			return mThumbURI;
 		}
@@ -417,14 +442,14 @@ public class ReleaseInfo implements Cloneable {
 			List<ReleaseSummary> rv = new ArrayList<ReleaseSummary>(arr.length());
 			for (int i = 0; i < arr.length(); ++i) {
 				JSONObject desc = arr.getJSONObject(i);
-				ReleaseSummary s = new ReleaseSummary();
-				s.mIsMaster = desc.has("type") && desc.getString("type").equals("master");
-				s.mId = desc.getInt("id");
-				s.mTitle = desc.getString("title");
-				s.mCountry = desc.optString("country", null);
-				s.mFormat = desc.optString("format");
-				s.mLabel = desc.optString("label", null);
-				s.mThumbURI = desc.optString("thumb", null);
+				ReleaseSummary s = new ReleaseSummary(
+						desc.getInt("id"),
+						desc.has("type") && desc.getString("type").equals("master"),
+						desc.getString("title"),
+						desc.optString("format"),
+						desc.optString("label", null),
+						desc.optString("country", null),
+						desc.optString("thumb", null));
 				rv.add(s);
 			}
 			return rv;

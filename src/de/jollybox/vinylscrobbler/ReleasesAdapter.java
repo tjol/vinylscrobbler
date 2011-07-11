@@ -6,9 +6,13 @@ import de.jollybox.vinylscrobbler.util.ImageDownloader;
 import de.jollybox.vinylscrobbler.util.ReleaseInfo.ReleaseSummary;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -75,6 +79,32 @@ public class ReleasesAdapter extends BaseAdapter {
 		}
 
 		return view;
+	}
+	
+	public static class ReleaseOpener implements OnItemClickListener {
+		private final Context mContext;
+		
+		public ReleaseOpener(Context c) {
+			mContext = c;
+		}
+
+		public void onItemClick(AdapterView<?> adapter_view, View item_view, int position, long hash) {
+			ReleaseSummary release = (ReleaseSummary) adapter_view.getItemAtPosition(position);
+		
+			String type = "release";
+			if (release.isMaster()) {
+				type = "master";
+			}
+			int id = release.getId();
+			Uri uri = (new Uri.Builder()).scheme("de.jollybox.vinylscrobbler")
+										 .authority("discogs")
+										 .appendPath(type)
+										 .appendPath(Integer.toString(id))
+										 .build();
+			
+			mContext.startActivity(new Intent(Intent.ACTION_VIEW, uri));
+		}
+		
 	}
 
 }

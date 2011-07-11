@@ -16,9 +16,13 @@ import de.jollybox.vinylscrobbler.util.Lastfm;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -27,10 +31,16 @@ import android.widget.TextView;
 
 public class SettingsScreen extends Activity
 							implements Lastfm.ErrorHandler {
-	private final int DIALOG_LOGIN = 1;
+	public static final String PREFS_FILE_NAME = "de.jollybox.vinylscrobbler.settings";
+	public static final String PREF_N_RECENT = "nRecent";
+	public static final int DEFAULT_N_RECENT = 10;
+	private SharedPreferences mPrefs;
+	
+	private static final int DIALOG_LOGIN = 1;
 	
 	private Lastfm mLastfm;
 	
+	private EditText mNoOfRecent;
 	private TextView mLoggedIn;
 	private Button mLoginNow;
 	private Button mLogout;
@@ -42,7 +52,10 @@ public class SettingsScreen extends Activity
 		setContentView(R.layout.settings);
 		
 		mLastfm = new Lastfm(this);
+		mPrefs = getPrefs(this);
+		int nRecent = mPrefs.getInt(PREF_N_RECENT, 0);
 		
+		mNoOfRecent = (EditText) findViewById(R.id.no_of_recent);
 		mLoggedIn = (TextView) findViewById(R.id.logged_in);
 		mLoginNow = (Button) findViewById(R.id.login_now);
 		mLogout = (Button) findViewById(R.id.logout);
@@ -50,7 +63,19 @@ public class SettingsScreen extends Activity
 		mLoginNow.setVisibility(View.GONE);
 		mLogout.setVisibility(View.GONE);
 		
+		mNoOfRecent.setText(Integer.toString(nRecent));
+		mNoOfRecent.addTextChangedListener(mNoOfRecentWatcher);
+		
 		showCorrectControl();
+	}
+	
+	public static SharedPreferences getPrefs(Context context) {
+		SharedPreferences prefs = context.getSharedPreferences(PREFS_FILE_NAME, MODE_PRIVATE);
+		int nRecent = prefs.getInt(PREF_N_RECENT, -1);
+		if (nRecent < 0) {
+			prefs.edit().putInt(PREF_N_RECENT, DEFAULT_N_RECENT).commit();
+		}
+		return prefs;
 	}
 	
 	public void errorMessage(String message) {
@@ -76,6 +101,21 @@ public class SettingsScreen extends Activity
 			mLoginNow.setVisibility(View.VISIBLE);
 		}
 	}
+	
+	private TextWatcher mNoOfRecentWatcher = new TextWatcher() {
+		public void onTextChanged(CharSequence s, int start, int before, int count) { }
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+		
+		@Override
+		public void afterTextChanged(Editable s) {
+			if (s.length() == 0) return;
+			int newNRecent = Integer.parseInt(s.toString());
+			int oldNRecent = mPrefs.getInt(PREF_N_RECENT, DEFAULT_N_RECENT);
+			if (newNRecent != oldNRecent) {
+				mPrefs.edit().putInt(PREF_N_RECENT, newNRecent).commit();
+			}
+		}
+	};
 	
 	private OnClickListener mOnLoginClickListener = new OnClickListener() {
 		

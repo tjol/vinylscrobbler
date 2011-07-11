@@ -57,4 +57,5 @@
     <string name="ignore_update">Ignore</string>
     <string name="info_format">Format:</string>
     <string name="master_release">Master release</string>
+    <string name="setting_no_recent_records">Number of records to remember</string>
 </resources>

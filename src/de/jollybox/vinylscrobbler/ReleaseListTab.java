@@ -22,13 +22,9 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
-public class ReleaseListTab extends Activity 
-							implements OnItemClickListener {
+public class ReleaseListTab extends Activity {
 	
 	protected ListView mList;
 	
@@ -66,7 +62,7 @@ public class ReleaseListTab extends Activity
 					//ReleasesAdapter adapter = new ReleasesAdapter(releases);
 					ReleasesAdapter adapter = new ReleasesAdapter(mContext, ReleaseSummary.fromJSONArray(releases));
 					mList.setAdapter(adapter);
-					mList.setOnItemClickListener(ReleaseListTab.this);
+					mList.setOnItemClickListener(new ReleasesAdapter.ReleaseOpener(mContext));
 				} catch (JSONException json_exc) {
 					errorMessage("Cannot comprehend data");
 				}
@@ -74,22 +70,6 @@ public class ReleaseListTab extends Activity
 		};
 		
 		query.execute(query_string);
-	}
-	
-	public void onItemClick(AdapterView<?> adapter_view, View item_view, int position, long hash) {
-		ReleaseSummary release = (ReleaseSummary) adapter_view.getItemAtPosition(position);
-	
-		String type = "release";
-		if (release.isMaster()) {
-			type = "master";
-		}
-		int id = release.getId();
-		Uri uri = (new Uri.Builder()).scheme("de.jollybox.vinylscrobbler")
-									 .authority("discogs")
-									 .appendPath(type)
-									 .appendPath(Integer.toString(id))
-									 .build();
-		startActivity(new Intent(Intent.ACTION_VIEW, uri));
 	}
 	
 	@Override

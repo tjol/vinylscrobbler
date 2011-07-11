@@ -4,8 +4,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-    <TextView android:layout_height="wrap_content" android:id="@+id/textView1" android:layout_width="wrap_content" android:layout_gravity="center_horizontal" android:layout_marginTop="50dip" android:layout_marginBottom="100dip" android:textSize="30sp" android:text="@string/catchphrase"></TextView>
-    <Button android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/main_search" android:text="@string/main_search"></Button>
-    <Button android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/main_barcode" android:text="@string/main_barcode"></Button>
-    <Button android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/main_settings" android:text="@string/main_settings"></Button>
+    <TextView android:layout_height="wrap_content" android:id="@+id/textView1" android:layout_width="wrap_content" android:layout_gravity="center_horizontal" android:text="@string/catchphrase" android:layout_margin="5dp" android:textSize="25sp"></TextView>
+    <ListView android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@android:id/list"></ListView>
 </LinearLayout>

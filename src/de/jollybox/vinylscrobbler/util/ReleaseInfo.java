@@ -207,7 +207,7 @@ public class ReleaseInfo implements Cloneable {
 		} catch (JSONException e) {
 			// no picture. That's all.
 		}
-		return new ReleaseSummary(mId, mIsMaster, mTitle, getFormatString(), label, mCountry, thumb);
+		return new ReleaseSummary(mId, mIsMaster, mTitle, mIsMaster ? null : getFormatString(), label, mCountry, thumb);
 	}
 	
 	public int getId() {

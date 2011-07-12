@@ -33,7 +33,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -108,38 +108,44 @@ public class MainScreen extends ListActivity {
 		ListView list = getListView();
 		
 		if (create) {
-			View header = getLayoutInflater().inflate(R.layout.list_command, list, false);
-			((TextView)header.findViewById(R.id.text)).setText(R.string.main_barcode);
-			((ImageView)header.findViewById(R.id.icon)).setImageResource(R.drawable.ic_menu_barcode);
-			header.setClickable(true);
-			header.setOnClickListener(mBarcodeClickListener);
-			list.addHeaderView(header);
+			final View vBarcode = getLayoutInflater().inflate(R.layout.list_command, list, false);
+			((TextView)vBarcode.findViewById(R.id.text)).setText(R.string.main_barcode);
+			((ImageView)vBarcode.findViewById(R.id.icon)).setImageResource(R.drawable.ic_menu_barcode);
+			vBarcode.setClickable(false);
 			
-			header = getLayoutInflater().inflate(R.layout.list_command, list, false);
-			((TextView)header.findViewById(R.id.text)).setText(R.string.main_search);
-			((ImageView)header.findViewById(R.id.icon)).setImageResource(R.drawable.ic_menu_search);
-			header.setClickable(true);
-			header.setOnClickListener(mSearchClickListener);
-			list.addHeaderView(header);
+			final View vSearch = getLayoutInflater().inflate(R.layout.list_command, list, false);
+			((TextView)vSearch.findViewById(R.id.text)).setText(R.string.main_search);
+			((ImageView)vSearch.findViewById(R.id.icon)).setImageResource(R.drawable.ic_menu_search);
+			vSearch.setClickable(false);
 			
-			header = getLayoutInflater().inflate(R.layout.list_command, list, false);
-			((TextView)header.findViewById(R.id.text)).setText(R.string.main_settings);
-			((ImageView)header.findViewById(R.id.icon)).setImageResource(R.drawable.ic_menu_preferences);
-			header.setClickable(true);
-			header.setOnClickListener(mSettingsClickListener);
-			list.addHeaderView(header);
+			final View vSettings = getLayoutInflater().inflate(R.layout.list_command, list, false);
+			((TextView)vSettings.findViewById(R.id.text)).setText(R.string.main_settings);
+			((ImageView)vSettings.findViewById(R.id.icon)).setImageResource(R.drawable.ic_menu_preferences);
+			vSettings.setClickable(false);
 			
-			list.setOnItemClickListener(new ReleasesAdapter.ReleaseOpener(this));
+			list.addHeaderView(vBarcode);
+			list.addHeaderView(vSearch);
+			list.addHeaderView(vSettings);
+			
+			final OnItemClickListener releaseClickListener = new ReleasesAdapter.ReleaseOpener(this);
+			
+			list.setOnItemClickListener(new OnItemClickListener() {
+				public void onItemClick(android.widget.AdapterView<?> av, View v, int pos, long id) {
+					if (v == vBarcode) {
+						doBarcodeScan(MainScreen.this);
+					} else if (v == vSearch) {
+						onSearchRequested();
+					} else if (v == vSettings) {
+						startActivity(new Intent(MainScreen.this, SettingsScreen.class));
+					} else {
+						releaseClickListener.onItemClick(av, v, pos, id);
+					}
+				};
+			});
 		}
 		
 		setListAdapter(releaseAdapter);
 	}
-	
-	private OnClickListener mSearchClickListener = new OnClickListener() {
-		public void onClick(View v) {
-			onSearchRequested();
-		}
-	};
 	
 	public boolean onSearchRequested() {
 		
@@ -178,19 +184,6 @@ public class MainScreen extends ListActivity {
 	private static void doBarcodeScan (final Activity a) {
 		a.startActivity(new Intent(a, BarcodeActivity.class));
 	}
-	
-	private OnClickListener mBarcodeClickListener = new OnClickListener() {
-		public void onClick(View v) {
-			doBarcodeScan(MainScreen.this);
-		}
-	};
-	
-	private OnClickListener mSettingsClickListener = new OnClickListener() {
-		
-		public void onClick(View v) {
-			startActivity(new Intent(MainScreen.this, SettingsScreen.class));
-		}
-	};
 	
 	private boolean checkForUpdate() {
 		try {

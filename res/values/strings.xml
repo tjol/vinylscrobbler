@@ -58,4 +58,5 @@
     <string name="info_format">Format:</string>
     <string name="master_release">Master release</string>
     <string name="setting_no_recent_records">Number of records to remember</string>
+    <string name="recent_releases">Recent</string>
 </resources>

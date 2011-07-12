@@ -69,6 +69,7 @@
             <meta-data android:name="android.app.default_searchable" android:value=".SearchScreen"></meta-data>
         </activity>
         <activity android:name=".SettingsScreen">
+        	<meta-data android:name="android.app.default_searchable" android:value=".SearchScreen"></meta-data>
         </activity>
         <activity android:name=".BarcodeActivity"></activity>
 

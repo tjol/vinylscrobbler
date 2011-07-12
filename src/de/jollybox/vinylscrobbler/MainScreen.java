@@ -164,6 +164,9 @@ public class MainScreen extends ListActivity {
 		case R.id.item_settings:
 			a.startActivity(new Intent(a, SettingsScreen.class));
 			return true;
+		case R.id.item_recent:
+			a.startActivity(new Intent(a, MainScreen.class));
+			return true;
 		default:
 			return false;
 		}
@@ -173,6 +176,7 @@ public class MainScreen extends ListActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main_menu, menu);
+		menu.findItem(R.id.item_recent).setVisible(false);
 		return true;
 	}
 	

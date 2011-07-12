@@ -28,6 +28,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -58,9 +59,19 @@ public class MainScreen extends ListActivity {
 			prefs.edit().putBoolean("firstrun", false).commit();
 		}
 		
-		if (checkForUpdate()) {
-			showDialog(DIALOG_UPDATE);
-		}
+		(new AsyncTask<Void, Void, Boolean>() {
+			@Override
+			protected Boolean doInBackground(Void... params) {
+				return checkForUpdate();
+			}
+			@Override
+			protected void onPostExecute(Boolean result) {
+				super.onPostExecute(result);
+				if (result) {
+					showDialog(DIALOG_UPDATE);
+				}
+			}
+		}).execute();
 	}
 	
 	@Override

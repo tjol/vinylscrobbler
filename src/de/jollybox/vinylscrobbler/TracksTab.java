@@ -76,6 +76,7 @@ public class TracksTab extends ListActivity
 				ListView list = getListView();
 				setListAdapter(mTracks);
 				list.setOnItemClickListener(TracksTab.this);
+				list.setVerticalFadingEdgeEnabled(true);
 			}
 		};
 		

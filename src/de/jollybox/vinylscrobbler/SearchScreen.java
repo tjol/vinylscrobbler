@@ -55,6 +55,8 @@ public class SearchScreen extends Activity
 		mRedirect = intent.getBooleanExtra("REDIRECT", false);
 
 		mList = (ListView) findViewById(R.id.results_list);
+		mList.setVerticalFadingEdgeEnabled(true);
+		
 		mDownloader = new ImageDownloader(this);
 		mQuery = (EditText) findViewById(R.id.search_query); 
 		mQuery.setOnClickListener(mSearchClickListener);

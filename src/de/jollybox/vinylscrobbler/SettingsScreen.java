@@ -109,7 +109,6 @@ public class SettingsScreen extends Activity
 		public void onTextChanged(CharSequence s, int start, int before, int count) { }
 		public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 		
-		@Override
 		public void afterTextChanged(Editable s) {
 			if (s.length() == 0) return;
 			int newNRecent = Integer.parseInt(s.toString());

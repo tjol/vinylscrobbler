@@ -81,7 +81,6 @@ public class MainScreen extends ListActivity {
 			return (new AlertDialog.Builder(this))
 						.setMessage(R.string.firstrun_settings_info)
 						.setPositiveButton(R.string.go_to_settings, new DialogInterface.OnClickListener() {
-							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								startActivity(new Intent(MainScreen.this, SettingsScreen.class));						
 							}
@@ -92,7 +91,6 @@ public class MainScreen extends ListActivity {
 			return (new AlertDialog.Builder(this))
 						.setMessage(R.string.new_update)
 						.setPositiveButton(R.string.download_update, new DialogInterface.OnClickListener() {							
-							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
 											  "http://code.jollybox.de/pub/vinylscrobbler/VinylScrobbler-latest.apk")));

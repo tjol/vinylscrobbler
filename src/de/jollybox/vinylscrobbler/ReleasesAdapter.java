@@ -28,22 +28,18 @@ public class ReleasesAdapter extends BaseAdapter {
 		mDownloader = new ImageDownloader(context);
 	}
 
-	@Override
 	public int getCount() {
 		return mReleases.size();
 	}
 
-	@Override
 	public Object getItem(int position) {
 		return mReleases.get(position);
 	}
 
-	@Override
 	public long getItemId(int position) {
 		return getItem(position).hashCode();
 	}
 
-	@Override
 	public View getView(int position, View view, ViewGroup parent) {
 		if (view == null) {
 			LayoutInflater inflater = (LayoutInflater)

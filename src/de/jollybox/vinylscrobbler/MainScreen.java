@@ -132,6 +132,9 @@ public class MainScreen extends ListActivity {
 			((ImageView)vSettings.findViewById(R.id.icon)).setImageResource(R.drawable.ic_menu_preferences);
 			vSettings.setClickable(false);
 			
+			list.setDividerHeight(1);
+			list.setVerticalFadingEdgeEnabled(true);
+			
 			list.addHeaderView(vBarcode);
 			list.addHeaderView(vSearch);
 			list.addHeaderView(vSettings);

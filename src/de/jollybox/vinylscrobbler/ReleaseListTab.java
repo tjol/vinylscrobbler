@@ -34,6 +34,7 @@ public class ReleaseListTab extends Activity {
 		
 		mList = new ListView(this);
 		setContentView(mList);
+		mList.setVerticalFadingEdgeEnabled(true);
 		
 		Intent intent = getIntent();
 		Uri target = intent.getData();

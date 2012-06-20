@@ -123,10 +123,10 @@ public class Lastfm extends ContextWrapper {
 			args.put("track["+i+"]", t.getTitle());
 			args.put("timestamp["+i+"]", Long.toString(times[i]));
 			if (t.getArtists().size() > 0) {
-				args.put("artist["+i+"]", t.getArtistString());
-				args.put("albumArtist["+i+"]", releaseArtist);
+				args.put("artist["+i+"]", Helper.removeNumberFromArtist(t.getArtistString()));
+				args.put("albumArtist["+i+"]", Helper.removeNumberFromArtist(releaseArtist));
 			} else {
-				args.put("artist["+i+"]", releaseArtist);
+				args.put("artist["+i+"]", Helper.removeNumberFromArtist(releaseArtist));
 			}
 			args.put("album["+i+"]", releaseTitle);
 			args.put("duration["+i+"]", Integer.toString(t.getDurationInSeconds()));

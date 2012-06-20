@@ -13,5 +13,5 @@ Before attempting to build, be sure to create a file res/values/lastfm.xml,
 using the lastfm.xml in this directory as inspiration.
 
 
-Copyright (c) 2011 Thomas Jollans
+Copyright (c) 2011-2012 Thomas Jollans et al. (see AUTHORS file)
 This program is free software. For details, see the file COPYING.

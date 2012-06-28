@@ -72,6 +72,12 @@
         	<meta-data android:name="android.app.default_searchable" android:value=".SearchScreen"></meta-data>
         </activity>
         <activity android:name=".BarcodeActivity"></activity>
+        <service android:name="FutureScrobbler" android:enabled="true" android:exported="false" android:permission="android.permission.INTERNET">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <data android:scheme="de.jollybox.vinylscrobbler" android:host="FutureScrobbler"/>
+            </intent-filter>
+        </service>
 
 
     </application>

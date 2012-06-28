@@ -18,6 +18,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import de.jollybox.vinylscrobbler.DiscogsImageAdapter;
 
@@ -330,7 +332,7 @@ public class ReleaseInfo implements Cloneable {
 		}
 	}
 	
-	public static class Credit {
+	public static class Credit implements Parcelable {
 		private String mArtist;
 		private String mArtistNameVar;
 		private String mRole;
@@ -345,6 +347,39 @@ public class ReleaseInfo implements Cloneable {
 			mTracks = source.getString("tracks");
 		}
 		
+		public Credit (Parcel in) {
+			mArtist = in.readString();
+			mArtistNameVar = in.readString();
+			mRole = in.readString();
+			mJoin = in.readString();
+			mTracks = in.readString();
+		}
+		
+		public static final Parcelable.Creator<Credit> CREATOR = 
+				new Creator<ReleaseInfo.Credit>() {
+					
+					public Credit[] newArray(int size) {
+						return new Credit[size];
+					}
+					
+					public Credit createFromParcel(Parcel source) {
+						return new Credit (source);
+					}
+				};
+		
+		public void writeToParcel(Parcel dest, int flags) {
+			dest.writeString(mArtist);
+			dest.writeString(mArtistNameVar);
+			dest.writeString(mRole);
+			dest.writeString(mJoin);
+			dest.writeString(mTracks);
+		}
+		
+		public int describeContents() {
+			// nothing special going on here - not a file descriptor.
+			return 0;
+		}
+				
 		public String getCanonicalArtistName() {
 			return mArtist;
 		}
@@ -376,7 +411,7 @@ public class ReleaseInfo implements Cloneable {
 				if (!first) sb.append(" / ");
 				else first = false;
 				
-				sb.append(c.getArtist());
+				sb.append(Helper.removeNumberFromArtist(c.getArtist()));
 			}
 			return sb.toString();
 		}

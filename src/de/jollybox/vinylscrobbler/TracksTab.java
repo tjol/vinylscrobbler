@@ -8,6 +8,7 @@
 
 package de.jollybox.vinylscrobbler;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -115,6 +117,10 @@ public class TracksTab extends ListActivity
 	private final int SC_SELECTED = 0x2;
 	private final int SC_PART = 0x3;
 	
+	private final int SC_T_PAST = 0x0;
+	private final int SC_T_FUTURE = 0x4;
+	private final int SC_T_MASK = SC_T_PAST | SC_T_FUTURE;
+	
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
@@ -122,10 +128,21 @@ public class TracksTab extends ListActivity
 		
 		if (mTracks == null) return;
 		
+		// Add items to the menu
+		Menu pastMenu = menu.addSubMenu(R.string.scrobble_past);
+		costructScobbleSubMenu(pastMenu, SC_T_PAST);
+		Menu futureMenu = menu.addSubMenu(R.string.scrobble_future);
+		costructScobbleSubMenu(futureMenu, SC_T_FUTURE);
+	}
+		
+	private void costructScobbleSubMenu (Menu menu, final int id_flag) {
+		
+		// Create a sub-menu listing the different ways to scrobble a track.
+		
 		int nSelected = mTracks.getSelected().size();
 		
-		menu.add(SC_ALL, Menu.NONE, Menu.NONE, R.string.scrobble_all);
-		mMenuScrobbleSelected = menu.add(SC_SELECTED, Menu.NONE, Menu.NONE,
+		menu.add(id_flag | SC_ALL, Menu.NONE, Menu.NONE, R.string.scrobble_all);
+		mMenuScrobbleSelected = menu.add(id_flag | SC_SELECTED, Menu.NONE, Menu.NONE,
 										 res.getQuantityString(R.plurals.scrobble_selected, nSelected));
 		if (nSelected == 0) {
 			mMenuScrobbleSelected.setVisible(false);
@@ -142,7 +159,7 @@ public class TracksTab extends ListActivity
 				} else {
 					text = res.getString(R.string.scrobble_disc);
 				}
-				menu.add(SC_PART, i, Menu.NONE,
+				menu.add(id_flag | SC_PART, i, Menu.NONE,
 						 String.format(text, p.getName()));
 				++i;
 			}
@@ -163,9 +180,13 @@ public class TracksTab extends ListActivity
 	
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		List<TrackList.Track> scrobble_these;
+		// Handle a context menu item
 		
-		switch (item.getGroupId()) {
+		ArrayList<TrackList.Track> scrobble_these;
+		
+		// What should I scrobble?
+		int groupId = item.getGroupId();
+		switch (groupId & ~SC_T_MASK) {
 		case SC_ALL:
 			scrobble_these = mTracks.getTracks();
 			break;
@@ -178,6 +199,25 @@ public class TracksTab extends ListActivity
 		default:
 			return false;
 		}
+		
+		// When should I scrobble?
+		switch (item.getGroupId() & SC_T_MASK) {
+		case SC_T_FUTURE:
+			scrobbleInTheFuture(scrobble_these);
+			break;
+		default: // Past
+			scrobbleInThePast(scrobble_these);
+			break;
+		}
+		
+		// Remember this scrobble and show it on the home screen next time.
+		HistoryDatabase history = new HistoryDatabase(this);
+		history.rememberRelease(mRelease.getSummary());
+		
+		return true;
+	}
+	
+	private void scrobbleInThePast (List<TrackList.Track> scrobble_these) {
 		
 		long[] times = new long[scrobble_these.size()];
 		long current_time = System.currentTimeMillis() /1000;
@@ -192,10 +232,21 @@ public class TracksTab extends ListActivity
 		mLastfm.scrobbleTracks(scrobble_these, times,
 							   mRelease.getTitle(), mRelease.getArtistString(),
 							   this, this);
-		HistoryDatabase history = new HistoryDatabase(this);
-		history.rememberRelease(mRelease.getSummary());
+	}
+	
+	private void scrobbleInTheFuture (ArrayList<TrackList.Track> scrobble_these) {
+		Intent futureScrobbleIntent = new Intent(Intent.ACTION_DEFAULT,
+												 new Uri.Builder()
+												 .scheme("de.jollybox.vinylscrobbler")
+												 .authority("FutureScrobbler")
+												 .appendPath("queueTracks")
+												 .build());
+		futureScrobbleIntent.putExtra("releaseTitle", mRelease.getTitle());
+		futureScrobbleIntent.putExtra("releaseArtist", mRelease.getArtistString());
+		futureScrobbleIntent.putParcelableArrayListExtra("tracks", scrobble_these);
+		futureScrobbleIntent.putExtra("startTime", System.currentTimeMillis());
 		
-		return true;
+		startService(futureScrobbleIntent);
 	}
 
 	public void onResult(Map<String, String> result) {

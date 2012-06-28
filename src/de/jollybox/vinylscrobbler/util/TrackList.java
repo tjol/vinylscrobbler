@@ -22,6 +22,8 @@ import de.jollybox.vinylscrobbler.R;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -153,7 +155,7 @@ public class TrackList extends BaseAdapter {
 		return mParts;
 	}
 	
-	public List<Track> getSelected () {
+	public ArrayList<Track> getSelected () {
 		ArrayList<Track> retval = new ArrayList<TrackList.Track>();
 		for (Track t : mTracks) {
 			if (t.isSelected()) {
@@ -163,7 +165,7 @@ public class TrackList extends BaseAdapter {
 		return retval;
 	}
 	
-	public List<Track> getTracks () {
+	public ArrayList<Track> getTracks () {
 		return new ArrayList<TrackList.Track>(Arrays.asList(mTracks));
 	}
 
@@ -190,7 +192,7 @@ public class TrackList extends BaseAdapter {
 		return view;
 	}
 	
-	public static class Track {
+	public static class Track implements Parcelable {
 		private final String mDuration;
 		private final String mTitle;
 		private final String mPosition;
@@ -212,6 +214,38 @@ public class TrackList extends BaseAdapter {
 			
 			mSelected = false;
 		}
+		
+		protected Track (Parcel src)
+		{
+			mPosition = src.readString();
+			mTitle = src.readString();
+			mDuration = src.readString();
+			mArtists = src.createTypedArrayList(ReleaseInfo.Credit.CREATOR);
+		}
+		
+		public static final Parcelable.Creator<Track> CREATOR =
+				new Creator<TrackList.Track>() {
+					public Track createFromParcel(Parcel source) {
+						return new Track (source);
+					}
+					
+					public Track[] newArray(int size) {
+						return new Track[size];
+					}
+				};
+				
+		public int describeContents() {
+			// 0: not a file descriptor.
+			return 0;
+		}
+		
+		public void writeToParcel(Parcel dest, int flags) {
+			dest.writeString(mPosition);
+			dest.writeString(mTitle);
+			dest.writeString(mDuration);
+			dest.writeTypedList(mArtists);
+		}
+				
 		
 		public String   getDuration () { return mDuration; }
 		public String   getTitle () { return mTitle; }
@@ -266,17 +300,17 @@ public class TrackList extends BaseAdapter {
 	
 	public static class Part {
 		private final String mName;
-		private final List<Track> mTracks;
+		private final ArrayList<Track> mTracks;
 		private final Part.Type mType;
 		
-		protected Part (Part.Type type, String name, List<Track> tracks) {
+		protected Part (Part.Type type, String name, ArrayList<Track> tracks) {
 			mName = name;
 			mTracks = tracks;
 			mType = type;
 		}
 		
 		public String getName () { return mName; }
-		public List<Track> getTracks () { return mTracks; }
+		public ArrayList<Track> getTracks () { return mTracks; }
 		public Part.Type getType () { return mType; }
 		
 		public String toString () {

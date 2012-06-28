@@ -3,7 +3,7 @@
     <string name="app_name">Vinyl Scrobbler</string>
     <string name="title_error">Error</string>
     <string name="error_invalid_data">Cannot comprehend data</string>
-    <string name="querying_discogs">Querying Discogs...</string>
+    <string name="querying_discogs">Querying Discogs…</string>
     <string name="error_discogs_io">Error querying Discogs.</string>
     <string name="error_lastfm">Last.fm error: %s</string>
     <string name="tab_artist_info">Artist</string>
@@ -59,4 +59,6 @@
     <string name="master_release">Master release</string>
     <string name="setting_no_recent_records">Number of records to remember</string>
     <string name="recent_releases">Recent</string>
+    <string name="scrobble_past">Just finished listening</string>
+    <string name="scrobble_future">About to start</string>
 </resources>

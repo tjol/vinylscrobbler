@@ -129,10 +129,11 @@ public class TracksTab extends ListActivity
 		if (mTracks == null) return;
 		
 		// Add items to the menu
-		Menu pastMenu = menu.addSubMenu(R.string.scrobble_past);
-		costructScobbleSubMenu(pastMenu, SC_T_PAST);
 		Menu futureMenu = menu.addSubMenu(R.string.scrobble_future);
 		costructScobbleSubMenu(futureMenu, SC_T_FUTURE);
+		Menu pastMenu = menu.addSubMenu(R.string.scrobble_past);
+		costructScobbleSubMenu(pastMenu, SC_T_PAST);
+		
 	}
 		
 	private void costructScobbleSubMenu (Menu menu, final int id_flag) {

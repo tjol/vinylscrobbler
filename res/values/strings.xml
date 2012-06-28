@@ -60,5 +60,7 @@
     <string name="setting_no_recent_records">Number of records to remember</string>
     <string name="recent_releases">Recent</string>
     <string name="scrobble_past">Just finished listening</string>
-    <string name="scrobble_future">About to start</string>
+    <string name="scrobble_future">About to play</string>
+    <string name="now_scrobbling">Now scrobbling</string>
+    <string name="album_by_artist">%1$s by %2$s</string>
 </resources>

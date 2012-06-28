@@ -16,7 +16,9 @@ import de.jollybox.vinylscrobbler.util.Lastfm;
 import de.jollybox.vinylscrobbler.util.TrackList;
 import de.jollybox.vinylscrobbler.util.TrackList.Track;
 import android.app.IntentService;
+import android.app.Notification;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -25,14 +27,24 @@ public class FutureScrobbler extends IntentService
 	
 	public FutureScrobbler() {
 		super ("FutureScrobbler");
+		
+		//mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		mNotification = null;
 	}
 	
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		Bundle extra_data = intent.getExtras();
 		
+		String releaseArtist = extra_data.getString("releaseArtist");
+		String releaseTitle = extra_data.getString("releaseTitle");
+		
+		updateNotification (releaseTitle, releaseArtist);
+		
 		List<String> pathSegments = intent.getData().getPathSegments();
+		
 		if (pathSegments.get(0).equals("scrobbleTrack")) {
+			
 			Track scrobbleThis = extra_data.getParcelable("track");
 			long when = extra_data.getLong("timeStamp");
 			
@@ -51,12 +63,11 @@ public class FutureScrobbler extends IntentService
 			List<Track> tracks = new ArrayList<TrackList.Track>(1);
 			tracks.add(scrobbleThis);
 			long[] times = { when / 1000 };
-			lastfm.scrobbleTracks(tracks, times, extra_data.getString("releaseTitle"),
-					extra_data.getString("releaseArtist"), this, this);
+			lastfm.scrobbleTracks(tracks, times, releaseTitle,
+					releaseArtist, this, this);
 			
 		} else if (pathSegments.get(0).equals("queueTracks")) {
-			String releaseArtist = extra_data.getString("releaseArtist");
-			String releaseTitile = extra_data.getString("releaseTitle");
+			
 			ArrayList<Track> tracks = extra_data.getParcelableArrayList("tracks");
 			long timePointer = extra_data.getLong("startTime");
 			
@@ -74,11 +85,30 @@ public class FutureScrobbler extends IntentService
 				
 				Intent scrobbleIntent = new Intent(Intent.ACTION_DEFAULT, scrobbleIntentUri);
 				scrobbleIntent.putExtra("releaseArtist", releaseArtist);
-				scrobbleIntent.putExtra("releaseTitle", releaseTitile);
+				scrobbleIntent.putExtra("releaseTitle", releaseTitle);
 				scrobbleIntent.putExtra("timeStamp", timePointer);
 				scrobbleIntent.putExtra("track", track);
 				startService(scrobbleIntent);
 			}
+		}
+	}
+	
+	private void updateNotification (final String releaseTitle, final String releaseArtist) {
+		Resources res = getResources();
+		boolean notificationIsNew = false;
+		
+		if (mNotification == null) {
+			notificationIsNew = true;
+			mNotification = new Notification(R.drawable.ic_tab_tracks, 
+									res.getString(R.string.now_scrobbling),
+									System.currentTimeMillis());
+		}
+		mNotification.setLatestEventInfo(this, res.getString(R.string.now_scrobbling),
+										 res.getString(R.string.album_by_artist, releaseTitle, releaseArtist),
+										 null);
+		
+		if (notificationIsNew) {
+			startForeground(1, mNotification);
 		}
 	}
 
@@ -90,4 +120,7 @@ public class FutureScrobbler extends IntentService
 	public void onResult(Map<String, String> result) {
 		// Cool. There's a result. I don't care (not in this class)
 	}
+	
+	private Notification mNotification;
+	//private NotificationManager mNotificationManager;
 }

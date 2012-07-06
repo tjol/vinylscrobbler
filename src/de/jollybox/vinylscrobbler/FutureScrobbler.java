@@ -17,6 +17,7 @@ import de.jollybox.vinylscrobbler.util.TrackList;
 import de.jollybox.vinylscrobbler.util.TrackList.Track;
 import android.app.IntentService;
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -103,9 +104,16 @@ public class FutureScrobbler extends IntentService
 									res.getString(R.string.now_scrobbling),
 									System.currentTimeMillis());
 		}
+		
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 
+																0, 
+																new Intent(),
+																PendingIntent.FLAG_UPDATE_CURRENT);
+		
 		mNotification.setLatestEventInfo(this, res.getString(R.string.now_scrobbling),
 										 res.getString(R.string.album_by_artist, releaseTitle, releaseArtist),
-										 null);
+										 contentIntent);
+		mNotification.contentIntent = contentIntent;
 		
 		if (notificationIsNew) {
 			startForeground(1, mNotification);

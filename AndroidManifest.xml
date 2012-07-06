@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="de.jollybox.vinylscrobbler"
-      android:versionCode="4" android:versionName="0.3">
+      android:versionCode="5" android:versionName="0.3.1">
 
 
-    <activity android:name="MainScreen"></activity>
 <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 <uses-sdk android:minSdkVersion="5" android:targetSdkVersion="10"></uses-sdk>
 <application android:icon="@drawable/icon" android:label="@string/app_name">

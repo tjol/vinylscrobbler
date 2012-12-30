@@ -425,6 +425,7 @@ public class ReleaseInfo implements Cloneable {
 		protected boolean mIsMaster;
 		protected String mCountry = null;
 		protected String mLabel = null;
+		protected String mArtist = null;
 		
 		protected ReleaseSummary () { super(); }
 		
@@ -439,6 +440,12 @@ public class ReleaseInfo implements Cloneable {
 			mThumbURI = thumbUri;
 		}
 		
+		public ReleaseSummary (int id, boolean isMaster, String title, String artist, String format,
+				   String label, String country, String thumbUri) {
+			this(id, isMaster, title, format, label, country, thumbUri);
+			mArtist = artist;
+		}
+		
 		public String getThumbURI() {
 			return mThumbURI;
 		}
@@ -451,6 +458,9 @@ public class ReleaseInfo implements Cloneable {
 		}
 		public String getTitle() {
 			return mTitle;
+		}
+		public String getArtist() {
+			return mArtist;
 		}
 		public boolean isMaster() {
 			return mIsMaster;
@@ -477,6 +487,20 @@ public class ReleaseInfo implements Cloneable {
 			List<ReleaseSummary> rv = new ArrayList<ReleaseSummary>(arr.length());
 			for (int i = 0; i < arr.length(); ++i) {
 				JSONObject desc = arr.getJSONObject(i);
+				//check for basic information, it is a collection array, change object and include (first) artist
+				if (desc.has("basic_information")) {
+					desc = desc.getJSONObject("basic_information");
+					ReleaseSummary s = new ReleaseSummary(
+							desc.getInt("id"),
+							desc.has("type") && desc.getString("type").equals("master"),
+							desc.getString("title"),
+							desc.getJSONArray("artists").getJSONObject(0).getString("name"),
+							desc.optString("format"),
+							desc.optString("label", null),
+							desc.optString("country", null),
+							desc.optString("thumb", null));
+					rv.add(s);
+				} else {
 				ReleaseSummary s = new ReleaseSummary(
 						desc.getInt("id"),
 						desc.has("type") && desc.getString("type").equals("master"),
@@ -486,6 +510,7 @@ public class ReleaseInfo implements Cloneable {
 						desc.optString("country", null),
 						desc.optString("thumb", null));
 				rv.add(s);
+				}
 			}
 			return rv;
 		}

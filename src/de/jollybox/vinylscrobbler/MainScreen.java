@@ -10,6 +10,7 @@ package de.jollybox.vinylscrobbler;
 
 import java.util.List;
 
+import de.jollybox.vinylscrobbler.util.Discogs;
 import de.jollybox.vinylscrobbler.util.HistoryDatabase;
 import de.jollybox.vinylscrobbler.util.ReleaseInfo.ReleaseSummary;
 
@@ -93,6 +94,11 @@ public class MainScreen extends ListActivity {
 			((ImageView)vSearch.findViewById(R.id.icon)).setImageResource(R.drawable.ic_menu_search);
 			vSearch.setClickable(false);
 			
+			final View vCollection = getLayoutInflater().inflate(R.layout.list_command, list, false);
+			((TextView)vCollection.findViewById(R.id.text)).setText(R.string.main_collection);
+			((ImageView)vCollection.findViewById(R.id.icon)).setImageResource(R.drawable.ic_menu_discogs);
+			vCollection.setClickable(false);
+			
 			final View vSettings = getLayoutInflater().inflate(R.layout.list_command, list, false);
 			((TextView)vSettings.findViewById(R.id.text)).setText(R.string.main_settings);
 			((ImageView)vSettings.findViewById(R.id.icon)).setImageResource(R.drawable.ic_menu_preferences);
@@ -103,6 +109,7 @@ public class MainScreen extends ListActivity {
 			
 			list.addHeaderView(vBarcode);
 			list.addHeaderView(vSearch);
+			list.addHeaderView(vCollection);
 			list.addHeaderView(vSettings);
 			
 			final OnItemClickListener releaseClickListener = new ReleasesAdapter.ReleaseOpener(this);
@@ -113,6 +120,8 @@ public class MainScreen extends ListActivity {
 						doBarcodeScan(MainScreen.this);
 					} else if (v == vSearch) {
 						onSearchRequested();
+					} else if (v == vCollection) {
+						onCollectionRequested();
 					} else if (v == vSettings) {
 						startActivity(new Intent(MainScreen.this, SettingsScreen.class));
 					} else {
@@ -130,6 +139,16 @@ public class MainScreen extends ListActivity {
 		startActivity(new Intent(MainScreen.this, SearchScreen.class));
 		return true;
 	};
+	
+	public boolean onCollectionRequested() {
+		if (new Discogs(this).getUser() != null) {
+			startActivity(new Intent(MainScreen.this, CollectionScreen.class));
+			return true;
+		} else {
+			(new AlertDialog.Builder(this)).setMessage(R.string.discogs_nologin).setNeutralButton(android.R.string.ok, null).show();
+			return false;
+		}
+	}
 	
 	public static boolean handleMenuEvent (Activity a, MenuItem item) {
 		switch (item.getItemId()) {

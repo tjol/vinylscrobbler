@@ -1,6 +1,8 @@
 package de.jollybox.vinylscrobbler;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import de.jollybox.vinylscrobbler.util.ImageDownloader;
 import de.jollybox.vinylscrobbler.util.ReleaseInfo.ReleaseSummary;
@@ -19,21 +21,35 @@ import android.widget.TextView;
 
 public class ReleasesAdapter extends BaseAdapter {
 	private final List<ReleaseSummary> mReleases;
+	private List<ReleaseSummary> mFiltered;
 	private final Context mContext;
 	private final ImageDownloader mDownloader;
 	
 	public ReleasesAdapter(Context context, List<ReleaseSummary> releases) {
 		mReleases = releases;
+		mFiltered = new ArrayList<ReleaseSummary>(releases);
 		mContext = context;
 		mDownloader = new ImageDownloader(context);
 	}
 
 	public int getCount() {
-		return mReleases.size();
+		return mFiltered.size();
 	}
 
 	public Object getItem(int position) {
-		return mReleases.get(position);
+		return mFiltered.get(position);
+	}
+	
+	public void ApplyFilter(String filter) {
+		mFiltered.clear();
+		for(ReleaseSummary r : mReleases) {
+			String check = r.getTitle().toLowerCase();
+			if (r.getArtist()!=null)check+=r.getArtist().toLowerCase();
+			if(check.contains(filter.toLowerCase())) {
+				mFiltered.add(r);
+			}
+		}
+		notifyDataSetChanged();
 	}
 
 	public long getItemId(int position) {
@@ -51,13 +67,18 @@ public class ReleasesAdapter extends BaseAdapter {
 		TextView info2 = (TextView) view.findViewById(R.id.item_info2);
 		ImageView img = (ImageView) view.findViewById(R.id.item_image);
 
-		ReleaseSummary release = mReleases.get(position);
+		ReleaseSummary release = mFiltered.get(position);
 		title.setText(release.getTitle());
 		info2.setText("");
 		if (release.isMaster()) {
 			info1.setText(R.string.master_release);
 		} else {
-			info1.setText(release.getFormat());
+			String artist = release.getArtist();
+			if(artist != null) {
+				info1.setText(artist);
+			} else {
+				info1.setText(release.getFormat());
+			}
 			String label = release.getLabel();
 			String country = release.getCountry();
 			if (label != null && country != null) {

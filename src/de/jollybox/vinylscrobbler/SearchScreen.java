@@ -44,6 +44,7 @@ public class SearchScreen extends Activity
 	protected EditText mQuery;
 	protected ImageDownloader mDownloader;
 	protected boolean mRedirect = false;
+	protected boolean mBarcode = false;
 	protected boolean mHaveSearched = false;
 
 	@Override
@@ -53,6 +54,7 @@ public class SearchScreen extends Activity
 		
 		Intent intent = getIntent();
 		mRedirect = intent.getBooleanExtra("REDIRECT", false);
+		mBarcode = intent.getBooleanExtra("BARCODE", false);
 
 		mList = (ListView) findViewById(R.id.results_list);
 		mList.setVerticalFadingEdgeEnabled(true);
@@ -94,33 +96,24 @@ public class SearchScreen extends Activity
 	
 	public void search (String quest) {
 		mHaveSearched = true;
-		String query_string = "/search?q=" + Uri.encode(quest);
-		
+		String query_string = "";
+		if(mBarcode) {
+			query_string = "/database/search?barcode=" + Uri.encode(quest);
+		} else {
+			query_string = "/database/search?q=" + Uri.encode(quest);
+		}
 		DiscogsQuery q = new DiscogsQuery.WithAlertDialog(SearchScreen.this, false) {
 			@Override
 			protected void onResult(JSONObject result) {
-				JSONArray result_array, result_array_2;
+				JSONArray result_array;
 				try {
-					JSONObject resp = result.getJSONObject("resp");
-					if (resp.getBoolean("status") != true) {
+					JSONObject resp = result.getJSONObject("pagination");
+					if (resp.getInt("items") == 0) {
 						errorMessage(res.getString(R.string.no_search_results));
 						return;
 					}
-					JSONObject search = resp.getJSONObject("search");
-					if (search.has("exactresults")) {
-						result_array = search.getJSONArray("exactresults");
-						result_array_2 = search.getJSONObject("searchresults")
-										       .getJSONArray("results");
-						
-						int extralen = result_array_2.length();
-						
-						for (int i = 0; i < extralen; ++i) {
-							result_array.put(result_array_2.get(i));
-						}
-					} else {
-						result_array = search.getJSONObject("searchresults").getJSONArray("results");
-					}
-					
+					result_array = result.getJSONArray("results");
+										
 				} catch (Exception exc) {
 					errorMessage(res.getString(R.string.error_invalid_data));
 					return;

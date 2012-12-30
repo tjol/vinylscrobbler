@@ -5,7 +5,6 @@
 	Enter a discogs API key and secret here to make discogs collection browsing work.
  -->
 <resources>
-	<string name="discogs_api_root">http://api.discogs.com</string>
     <string name="discogs_api_key">ENTER API KEY HERE</string>
     <string name="discogs_api_secret">ENTER API SECRET HERE</string>
 </resources>

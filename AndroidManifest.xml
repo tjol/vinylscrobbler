@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="de.jollybox.vinylscrobbler"
-      android:versionCode="5" android:versionName="0.3.1">
+      android:versionCode="6" android:versionName="0.4.5">
 
 
 <uses-permission android:name="android.permission.INTERNET"></uses-permission>
@@ -14,6 +14,8 @@
             </intent-filter>
             <meta-data android:resource="@xml/searchable" android:name="android.app.searchable"></meta-data>
         </activity>
+        <activity android:name=".CollectionScreen"/>
+        <activity android:name=".DiscogsOauth"/>
         <activity android:name=".MainScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"></action>

@@ -1,12 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="fill_parent"
-  android:layout_height="fill_parent" android:orientation="vertical">
-    <TextView android:textSize="18sp" android:textStyle="bold" android:padding="4sp" android:layout_width="wrap_content" android:id="@+id/textView2" android:layout_height="wrap_content" android:text="@string/setting_no_recent_records"></TextView>
-    <EditText android:layout_height="wrap_content" android:inputType="number" android:layout_width="100sp" android:layout_margin="10sp" android:layout_gravity="center_horizontal" android:id="@+id/no_of_recent"></EditText>
-    <TextView android:id="@+id/textView1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textStyle="bold" android:textSize="18sp" android:padding="4sp" android:text="@string/lastfm"></TextView>
-    <TextView android:textSize="16sp" android:paddingLeft="30sp" android:paddingRight="30sp" android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingTop="10sp" android:id="@+id/logged_in" android:text="@string/loggedin_as"></TextView>
-    <Button android:id="@+id/login_now" android:layout_height="wrap_content" android:layout_marginLeft="30sp" android:layout_marginRight="30sp" android:layout_width="fill_parent" android:layout_marginTop="10sp" android:text="@string/lastfm_login"></Button>
-    <Button android:id="@+id/logout" android:layout_height="wrap_content" android:layout_marginLeft="30sp" android:layout_marginRight="30sp" android:layout_width="fill_parent" android:layout_marginTop="10sp" android:text="@string/lastfm_logout"></Button>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="4sp"
+        android:text="@string/setting_no_recent_records"
+        android:textSize="18sp"
+        android:textStyle="bold" >
+    </TextView>
+
+    <EditText
+        android:id="@+id/no_of_recent"
+        android:layout_width="100sp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="10sp"
+        android:inputType="number" >
+    </EditText>
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="4sp"
+        android:text="@string/lastfm"
+        android:textSize="18sp"
+        android:textStyle="bold" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/logged_in"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="30sp"
+        android:paddingRight="30sp"
+        android:paddingTop="10sp"
+        android:text="@string/loggedin_as"
+        android:textSize="16sp" >
+    </TextView>
+
+    <Button
+        android:id="@+id/login_now"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30sp"
+        android:layout_marginRight="30sp"
+        android:layout_marginTop="10sp"
+        android:text="@string/lastfm_login" >
+    </Button>
+
+    <Button
+        android:id="@+id/logout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30sp"
+        android:layout_marginRight="30sp"
+        android:layout_marginTop="10sp"
+        android:text="@string/lastfm_logout" >
+    </Button>
+
+    <TextView
+        android:id="@+id/TextView01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="4sp"
+        android:text="@string/discogs"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/Discogs_Logged_in"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="30sp"
+        android:paddingRight="30sp"
+        android:paddingTop="10sp"
+        android:text="@string/discogs_loggedin_as"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/Discogs_Login_now"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30sp"
+        android:layout_marginRight="30sp"
+        android:layout_marginTop="10sp"
+        android:text="@string/discogs_login" />
+
+    <Button
+        android:id="@+id/Discogs_Logout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30sp"
+        android:layout_marginRight="30sp"
+        android:layout_marginTop="10sp"
+        android:text="@string/discogs_logout" />
+
 </LinearLayout>

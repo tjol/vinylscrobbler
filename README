@@ -11,8 +11,7 @@ Eclipse if you have the Android SDK and ADT Eclipse plugin installed.
 
 Before attempting to build, be sure to create a file res/values/lastfm.xml,
 using the lastfm.xml in this directory as inspiration.
-To enable Discogs collection support, complete discogs.xml in this directory
-and overwrite the one in res/values/discogs.xml
+To enable Discogs collection support, do the same for discogs.xml.
 
 
 Copyright (c) 2011-2012 Thomas Jollans et al. (see AUTHORS file)

@@ -112,7 +112,7 @@ public class ReleaseInfo implements Cloneable {
 			for (i = 0; i < formats.length(); ++i) {
 				JSONObject jfmt = formats.getJSONObject(i);
 				StringBuilder fmt = new StringBuilder();
-				fmt.append(String.format("%sÃ— %s",
+				fmt.append(String.format("%s× %s",
 										 jfmt.getString("qty"),
 										 jfmt.getString("name")));
 				if (jfmt.has("descriptions")) {
@@ -494,7 +494,7 @@ public class ReleaseInfo implements Cloneable {
 							desc.getInt("id"),
 							desc.has("type") && desc.getString("type").equals("master"),
 							desc.getString("title"),
-							desc.getJSONArray("artists").getJSONObject(0).getString("name"),
+							Helper.removeNumberFromArtist(desc.getJSONArray("artists").getJSONObject(0).getString("name")),
 							desc.optString("format"),
 							desc.optString("label", null),
 							desc.optString("country", null),

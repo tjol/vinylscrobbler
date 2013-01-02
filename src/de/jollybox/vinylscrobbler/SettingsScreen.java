@@ -267,7 +267,7 @@ public class SettingsScreen extends Activity implements Lastfm.ErrorHandler {
 			String accessToken = data.getStringExtra("access_token");
 			String accessSecret = data.getStringExtra("access_secret");
 			mDiscogs.setWaiter(new Discogs.ResultWaiter() {
-				public void onResult(Map<String, String> result) {
+				public void onResult(Boolean result) {
 					showCorrectControl();
 				}
 			});

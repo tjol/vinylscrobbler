@@ -11,7 +11,7 @@ package de.jollybox.vinylscrobbler;
 import java.util.List;
 
 import de.jollybox.vinylscrobbler.util.Discogs;
-import de.jollybox.vinylscrobbler.util.HistoryDatabase;
+import de.jollybox.vinylscrobbler.util.VinylDatabase;
 import de.jollybox.vinylscrobbler.util.ReleaseInfo.ReleaseSummary;
 
 import android.app.Activity;
@@ -77,7 +77,7 @@ public class MainScreen extends ListActivity {
 	}
 	
 	protected void populateList(boolean create) {
-		HistoryDatabase history = new HistoryDatabase(this);
+		VinylDatabase history = new VinylDatabase(this);
 		List<ReleaseSummary> recentReleases = history.getRecentReleases();
 		ListAdapter releaseAdapter = new ReleasesAdapter(this, recentReleases);
 		

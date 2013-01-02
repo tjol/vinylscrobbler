@@ -17,7 +17,7 @@ import org.json.JSONObject;
 
 import de.jollybox.vinylscrobbler.util.Discogs;
 import de.jollybox.vinylscrobbler.util.DiscogsQuery;
-import de.jollybox.vinylscrobbler.util.HistoryDatabase;
+import de.jollybox.vinylscrobbler.util.VinylDatabase;
 import de.jollybox.vinylscrobbler.util.Lastfm;
 import de.jollybox.vinylscrobbler.util.ReleaseInfo;
 import de.jollybox.vinylscrobbler.util.TrackList;
@@ -79,7 +79,6 @@ public class TracksTab extends ListActivity
 					return;
 				}
 				mTracks = mRelease.getTracks();
-				System.out.println("TRACKTAB: release id= " + mRelease.getMainVersionId());
 				ListView list = getListView();
 				setListAdapter(mTracks);
 				list.setOnItemClickListener(TracksTab.this);
@@ -223,7 +222,7 @@ public class TracksTab extends ListActivity
 		}
 		
 		// Remember this scrobble and show it on the home screen next time.
-		HistoryDatabase history = new HistoryDatabase(this);
+		VinylDatabase history = new VinylDatabase(this);
 		history.rememberRelease(mRelease.getSummary());
 		
 		return true;

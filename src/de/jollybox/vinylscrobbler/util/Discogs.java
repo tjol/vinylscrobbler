@@ -10,6 +10,7 @@ package de.jollybox.vinylscrobbler.util;
 
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.scribe.builder.ServiceBuilder;
@@ -20,10 +21,15 @@ import org.scribe.oauth.OAuthService;
 
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.widget.Toast;
+import de.jollybox.vinylscrobbler.CollectionScreen;
 import de.jollybox.vinylscrobbler.R;
+import de.jollybox.vinylscrobbler.ReleasesAdapter;
+import de.jollybox.vinylscrobbler.SettingsScreen;
+import de.jollybox.vinylscrobbler.util.ReleaseInfo.ReleaseSummary;
 
 public class Discogs extends ContextWrapper {
 	private final String API_KEY;
@@ -36,6 +42,8 @@ public class Discogs extends ContextWrapper {
 	private String mAccessToken;
 	private String mAccessSecret;
 	private String mUserName;
+	private int mCollectionSize;
+	private int mCollectionLast;
 	private boolean mAutoadd;
 	
 	private ResultWaiter mWaiter;
@@ -51,6 +59,8 @@ public class Discogs extends ContextWrapper {
 		mAccessToken = mPrefs.getString("access_token", null);
 		mAccessSecret = mPrefs.getString("access_secret", null);
 		mUserName = mPrefs.getString("user_name", null);
+		mCollectionSize = mPrefs.getInt("collection_size", 0);
+		mCollectionLast = mPrefs.getInt("collection_last", 0);
 		mAutoadd = mPrefs.getBoolean("autoadd", false);
 		
 		mOAuthService = new ServiceBuilder().provider(DiscogsApi.class)
@@ -63,7 +73,7 @@ public class Discogs extends ContextWrapper {
 		return mUserName;
 	}
 	
-	//only add releases that are not added to discogs colelction yet
+	//only add releases that are not added to discogs collection yet
 	public void addRelease(final int id) {
 		//first check if the user has the current release in his collection, do an info query
 		//TODO check if instances/1 is a given when a release is present in a collection
@@ -116,6 +126,53 @@ public class Discogs extends ContextWrapper {
 		lookupquery.hideProgress();
 		lookupquery.execute(query_string);
 		
+	}
+	
+	public void onCollectionChanged(final ResultWaiter waiter) {
+		final String query_string = "/users/" + getUser() + "/collection/folders/0/releases?per_page=1&page=1&sort=added&sort_order=desc";
+		DiscogsQuery collectionstatquery = new DiscogsQuery.WithAlertDialog(this, false, this) {
+			@Override
+			protected void onResult(JSONObject result) {
+				try {
+					//check if we get an authentication error (key remotely revoked)
+					if (result.has("message")) {
+						if(result.getString("message").contains("authenticate")) {
+							//the current discogs token is invalid, clear discogs session and remove the query from the cache so after login we get the correct results
+							forgetSession();
+							removeFromCache(query_string);
+							errorMessage(res.getString(R.string.discogs_nologin));
+							return;
+						}
+					}
+					int collectionSize = result.getJSONObject("pagination").getInt("items");
+					if (collectionSize != 0) {
+						int lastAddition = result.getJSONArray("releases").getJSONObject(0).getInt("id");
+						//see if the remote collection has changed from the last fetch
+						if(mCollectionSize != collectionSize || mCollectionLast != lastAddition) {
+							//already store new values, but needs to be committed by saveDiscogsState() after db updates
+							mCollectionLast = lastAddition;
+							mCollectionSize = collectionSize;
+							waiter.onResult(true);
+						} else {
+							waiter.onResult(false);
+						}
+					}
+					
+				} catch (JSONException json_exc) {
+					errorMessage("Cannot comprehend data");
+				}
+			}
+		};
+		collectionstatquery.hideProgress();
+		collectionstatquery.execute(query_string);
+	}
+	
+	//only call this after writing 
+	public void saveDiscogsState() {
+		SharedPreferences.Editor prefEdit = mPrefs.edit();
+		prefEdit.putInt("collection_size", mCollectionSize);
+		prefEdit.putInt("collection_last", mCollectionLast);
+		prefEdit.commit();
 	}
 
 	public OAuthService getOAuthService() {
@@ -210,6 +267,6 @@ public class Discogs extends ContextWrapper {
 	}
 
 	public interface ResultWaiter {
-		public void onResult(Map<String,String> result);
+		public void onResult(Boolean result);
 	}
 }

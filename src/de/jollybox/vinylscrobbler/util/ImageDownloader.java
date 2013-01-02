@@ -18,6 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 
+import de.jollybox.vinylscrobbler.util.ReleaseInfo.ReleaseSummary;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -39,7 +41,21 @@ public final class ImageDownloader {
 		mContext = context;
 	}
 	
+	public void getPersistentBitmap(ReleaseSummary release, ImageView img) {
+		if(release.getThumb() != null) {
+			//thumb was already in db, use this one
+			img.setImageBitmap(release.getThumb());
+		} else {
+			//download thumb and store it in db
+			getBitmap(release.getThumbURI(), img, release);
+		}
+	}
+	
 	public void getBitmap(String url, ImageView img) {
+		getBitmap(url, img, null);
+	}
+	
+	public void getBitmap(String url, ImageView img, ReleaseSummary release) {
 		SoftReference<Bitmap> bmref;
 		Bitmap bmp;
 		if ((bmref = cCache.get(url)) != null) {
@@ -58,9 +74,11 @@ public final class ImageDownloader {
 		if (dl == null) {
 			dl = new DownloadTask();
 			dl.mImg = img;
+			dl.mRelease = release;
 			dl.execute(url);
 		} else {
 			dl.mImg = img;
+			dl.mRelease = release;
 		}
 		cDownloads.put(img, dl);
 	}
@@ -71,6 +89,7 @@ public final class ImageDownloader {
 	
 	private class DownloadTask extends AsyncTask<String, Void, Bitmap> {
 		ImageView mImg;
+		ReleaseSummary mRelease;
 
 		@Override
 		protected Bitmap doInBackground(String... params) {
@@ -99,6 +118,12 @@ public final class ImageDownloader {
 			if (cDownloads.get(mImg) == this) {
 				// Okay! We haven't been replaced!
 				mImg.setImageBitmap(result);
+				//check if we need to store this result in the db
+				if(mRelease != null) {
+					mRelease.setThumb(result);
+					VinylDatabase collection = new VinylDatabase(mContext);
+					collection.storeThumb(mRelease);
+				}
 			}	
 			
 		}

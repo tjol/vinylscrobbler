@@ -18,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -434,6 +435,8 @@ public class ReleaseInfo implements Cloneable {
 		protected String mCountry = null;
 		protected String mLabel = null;
 		protected String mArtist = null;
+		protected Bitmap mThumb;
+		protected boolean mCollection;
 		
 		protected ReleaseSummary () { super(); }
 		
@@ -452,6 +455,13 @@ public class ReleaseInfo implements Cloneable {
 				   String label, String country, String thumbUri) {
 			this(id, isMaster, title, format, label, country, thumbUri);
 			mArtist = artist;
+		}
+		public boolean isCollection() {
+			return mCollection;
+		}
+
+		public void setCollection(boolean collection) {
+			this.mCollection = collection;
 		}
 		
 		public String getThumbURI() {
@@ -490,6 +500,12 @@ public class ReleaseInfo implements Cloneable {
 		public int getId() {
 			return mId;
 		}
+		public Bitmap getThumb() {
+			return mThumb;
+		}
+		public void setThumb(Bitmap thumb) {
+			mThumb = thumb;
+		}
 		
 		public static List<ReleaseSummary> fromJSONArray (final JSONArray arr) throws JSONException {
 			List<ReleaseSummary> rv = new ArrayList<ReleaseSummary>(arr.length());
@@ -507,6 +523,7 @@ public class ReleaseInfo implements Cloneable {
 							desc.optString("label", null),
 							desc.optString("country", null),
 							desc.optString("thumb", null));
+					s.setCollection(true);
 					rv.add(s);
 				} else {
 				ReleaseSummary s = new ReleaseSummary(

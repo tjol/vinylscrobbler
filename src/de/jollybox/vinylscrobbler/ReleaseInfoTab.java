@@ -75,7 +75,6 @@ public class ReleaseInfoTab extends Activity {
 				title.setText(release.getTitle());
 				//check for main version id, defaults to release id if it is not a master release
 				mReleaseId = release.getMainVersionId();
-				System.out.println("INFOTAB: release id= " + mReleaseId);
 				
 				ArrayAdapter<CharSequence> items = new ArrayAdapter<CharSequence>(mContext, R.layout.textlistitem) {
 					@Override

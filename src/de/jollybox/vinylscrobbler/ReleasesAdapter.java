@@ -92,7 +92,12 @@ public class ReleasesAdapter extends BaseAdapter {
 		img.setImageBitmap(null);
 		String thumbURI = release.getThumbURI();
 		if (thumbURI != null) {
-			mDownloader.getBitmap(thumbURI, img);
+			//if it's part of the discogs collection, use the local thumb (and if not present store it)
+			if (release.isCollection()) {
+				mDownloader.getPersistentBitmap(release, img);
+			} else {
+				mDownloader.getBitmap(thumbURI, img);
+			}
 		}
 
 		return view;

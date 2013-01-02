@@ -15,6 +15,7 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.jollybox.vinylscrobbler.util.Discogs;
 import de.jollybox.vinylscrobbler.util.DiscogsQuery;
 import de.jollybox.vinylscrobbler.util.HistoryDatabase;
 import de.jollybox.vinylscrobbler.util.Lastfm;
@@ -48,6 +49,7 @@ public class TracksTab extends ListActivity
 	private Button mScrobbleBtn;
 	private Resources res;
 	private ReleaseInfo mRelease;
+	private Discogs mDiscogs;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +63,8 @@ public class TracksTab extends ListActivity
 		mScrobbleBtn.setOnClickListener(mOnScrobbleClickListener);
 		
 		initLastfm();
+		
+		mDiscogs = new Discogs(this);
 		
 		Intent intent = getIntent();
 		String query_string = intent.getData().getEncodedPath();
@@ -209,6 +213,12 @@ public class TracksTab extends ListActivity
 		default: // Past
 			scrobbleInThePast(scrobble_these);
 			break;
+		}
+		
+		//if we want to auto-add scrobbled releases to the discogs collection, do so now
+		//TODO actually check for this setting, currently not present
+		if(mDiscogs.getUser() != null) {
+			mDiscogs.addRelease(mRelease.getId());
 		}
 		
 		// Remember this scrobble and show it on the home screen next time.

@@ -40,6 +40,8 @@ public abstract class DiscogsQuery extends AsyncTask<String, Void, JSONObject> {
 	protected boolean mUseCache;
 	protected Discogs mDiscogsAuth;
 	protected Resources res;
+	protected Verb mHttpMethod = Verb.GET;
+	protected boolean mShowProgress = true;
 
 	public DiscogsQuery(Context context, boolean useCache, Discogs discogsAuth) {
 		mContext = context;
@@ -47,6 +49,10 @@ public abstract class DiscogsQuery extends AsyncTask<String, Void, JSONObject> {
 		mUseCache = useCache;
 		mDiscogsAuth = discogsAuth;
 		res = context.getResources();
+	}
+	
+	public void hideProgress() {
+		mShowProgress = false;
 	}
 
 	public DiscogsQuery(Context context, boolean useCache) {
@@ -66,8 +72,9 @@ public abstract class DiscogsQuery extends AsyncTask<String, Void, JSONObject> {
 	protected void onPreExecute() {
 		super.onPreExecute();
 
-		mProgress = ProgressDialog.show(mContext, "",
-				res.getString(R.string.querying_discogs), true);
+		if(mShowProgress) {
+			mProgress = ProgressDialog.show(mContext, "",res.getString(R.string.querying_discogs), true);
+		}
 	}
 	
 	protected boolean removeFromCache(String query) {
@@ -125,7 +132,7 @@ public abstract class DiscogsQuery extends AsyncTask<String, Void, JSONObject> {
 			String json_data;
 			// check if we have an discogs auth object, use it to sign and execute our request
 			if (mDiscogsAuth != null) {
-				OAuthRequest request = new OAuthRequest(Verb.GET, url);
+				OAuthRequest request = new OAuthRequest(mHttpMethod, url);
 				mDiscogsAuth.signRequest(request);
 				Response response = request.send();
 				json_data = response.getBody();
@@ -169,14 +176,16 @@ public abstract class DiscogsQuery extends AsyncTask<String, Void, JSONObject> {
 	@Override
 	protected void onPostExecute(JSONObject result) {
 		super.onPostExecute(result);
-		try {
-			mProgress.dismiss();
-		} catch (Exception exc) {
-			// er...
+		if(mShowProgress) {
 			try {
-				mProgress.hide();
-			} catch (Exception exc2) {
-				// what?!
+				mProgress.dismiss();
+			} catch (Exception exc) {
+				// er...
+				try {
+					mProgress.hide();
+				} catch (Exception exc2) {
+					// what?!
+				}
 			}
 		}
 

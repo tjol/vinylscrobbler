@@ -10,17 +10,25 @@ package de.jollybox.vinylscrobbler.util;
 
 import java.util.Map;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Token;
+import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import de.jollybox.vinylscrobbler.CollectionScreen;
 import de.jollybox.vinylscrobbler.R;
+import de.jollybox.vinylscrobbler.ReleasesAdapter;
+import de.jollybox.vinylscrobbler.SettingsScreen;
+import de.jollybox.vinylscrobbler.util.ReleaseInfo.ReleaseSummary;
 
 public class Discogs extends ContextWrapper {
 	private final String API_KEY;
@@ -56,6 +64,59 @@ public class Discogs extends ContextWrapper {
 	
 	public String getUser() {
 		return mUserName;
+	}
+	
+	//only add releases that are not added to discogs yet
+	public void addRelease(final int id) {
+		//first check if the user has the current release in his collection, do an info query
+		//TODO check if instances/1 is a given when a release is present in a collection
+		final String query_string = "/users/" + getUser() + "/collection/folders/0/releases/"+id+"/instances/1";
+		DiscogsQuery lookupquery = new DiscogsQuery.WithAlertDialog(this, false, this) {
+			@Override
+			protected void onResult(JSONObject result) {
+				try {
+					//check if we get a "not found" error, release is missing from discogs collection
+					if (result.has("message")) {
+						if(result.getString("message").contains("not found")) {
+							//add release to discogs
+							final String query_string = "/users/" + getUser() + "/collection/folders/1/releases/"+id;
+							DiscogsQuery addquery = new DiscogsQuery.WithAlertDialog(Discogs.this, false, Discogs.this) {
+								@Override
+								protected void onPreExecute() {
+									//set the HTTP method to POST
+									mHttpMethod = Verb.POST;
+									super.onPreExecute();
+								};
+								@Override
+								protected void onResult(JSONObject result) {
+										//check if we correctly added the release
+										if (result.has("resource_url")) {
+											//correctly added release to the discogs collection nothing to do... for now
+										} else {
+											errorMessage("Could not add release to the discogs collection");
+										}
+								}
+							};
+							addquery.hideProgress();
+							addquery.execute(query_string);
+							return;
+						} else if(result.getString("message").contains("authenticate")) {
+							//the current discogs token is invalid, clear discogs session
+							forgetSession();
+							removeFromCache(query_string);
+							errorMessage(res.getString(R.string.discogs_nologin));
+							return;
+						}
+					}
+					// if we don't get a not found error, assume the release is already added to the collection
+				} catch (JSONException json_exc) {
+					errorMessage("Cannot comprehend data");
+				}
+			}
+		};
+		lookupquery.hideProgress();
+		lookupquery.execute(query_string);
+		
 	}
 
 	public OAuthService getOAuthService() {

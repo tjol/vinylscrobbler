@@ -29,7 +29,7 @@ public class ReleaseInfo implements Cloneable {
 	private TrackList mTracks;
 	private boolean mIsMaster;
 	private int mMasterId;
-	private int mMainVerionId;
+	private int mMainVersionId;
 	private List<Integer> mVersionIds;
 	private List<Credit> mArtists;
 	private List<String> mGenres;
@@ -86,14 +86,14 @@ public class ReleaseInfo implements Cloneable {
 		if (mIsMaster) {
 			r = discogsResp.getJSONObject("master");
 			
-			mMainVerionId = r.getInt("main_release");
+			mMainVersionId = r.getInt("main_release");
 			
 			JSONArray versions = r.getJSONArray("versions");
 			mVersionIds = new ArrayList<Integer>(versions.length());
 			for (i = 0; i < versions.length(); ++i) {
 				JSONObject version = versions.getJSONObject(i);
 				int id = version.getInt("id");
-				if (id == mMainVerionId) {
+				if (id == mMainVersionId) {
 					mTitle = version.getString("title");
 				}
 				mVersionIds.add(id);
@@ -214,6 +214,14 @@ public class ReleaseInfo implements Cloneable {
 	
 	public int getId() {
 		return mId;
+	}
+	
+	public int getMainVersionId() {
+		if(mIsMaster) {
+			return mMainVersionId;
+		} else {
+			return mId;
+		}
 	}
 
 	public String getTitle() {

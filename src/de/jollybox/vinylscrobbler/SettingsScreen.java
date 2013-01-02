@@ -31,6 +31,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -53,6 +56,7 @@ public class SettingsScreen extends Activity implements Lastfm.ErrorHandler {
 	private TextView mDiscogsLoggedIn;
 	private Button mDiscogsLogin;
 	private Button mDiscogsLogout;
+	private CheckBox mDiscogsAutoadd;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -64,21 +68,24 @@ public class SettingsScreen extends Activity implements Lastfm.ErrorHandler {
 		mDiscogs = new Discogs(this);
 		mPrefs = getPrefs(this);
 		int nRecent = mPrefs.getInt(PREF_N_RECENT, 0);
-
+		
 		mNoOfRecent = (EditText) findViewById(R.id.no_of_recent);
 		mLoggedIn = (TextView) findViewById(R.id.logged_in);
 		mLoginNow = (Button) findViewById(R.id.login_now);
 		mLogout = (Button) findViewById(R.id.logout);
 		mDiscogsLoggedIn = (TextView) findViewById(R.id.Discogs_Logged_in);
+		mDiscogsAutoadd = (CheckBox) findViewById(R.id.Discogs_Autoadd);
 		mDiscogsLogin = (Button) findViewById(R.id.Discogs_Login_now);
 		mDiscogsLogout = (Button) findViewById(R.id.Discogs_Logout);
 		mLoggedIn.setVisibility(View.GONE);
 		mLoginNow.setVisibility(View.GONE);
 		mLogout.setVisibility(View.GONE);
 		mDiscogsLoggedIn.setVisibility(View.GONE);
+		mDiscogsAutoadd.setVisibility(View.GONE);
 		mDiscogsLogin.setVisibility(View.GONE);
 		mDiscogsLogout.setVisibility(View.GONE);
-
+		
+		mDiscogsAutoadd.setChecked(mDiscogs.isAutoadd());
 		mNoOfRecent.setText(Integer.toString(nRecent));
 		mNoOfRecent.addTextChangedListener(mNoOfRecentWatcher);
 
@@ -121,11 +128,14 @@ public class SettingsScreen extends Activity implements Lastfm.ErrorHandler {
 					.getString(R.string.loggedin_as), discogsUser)));
 			mDiscogsLoggedIn.setVisibility(View.VISIBLE);
 			mDiscogsLogin.setVisibility(View.GONE);
+			mDiscogsAutoadd.setVisibility(View.VISIBLE);
 			mDiscogsLogout.setVisibility(View.VISIBLE);
 			mDiscogsLogout.setOnClickListener(mOnDiscogsLogoutClickListener);
+			mDiscogsAutoadd.setOnCheckedChangeListener(mDiscogsAutoaddListener);
 		} else {
 			mDiscogsLogin.setOnClickListener(mOnDiscogsLoginClickListener);
 			mDiscogsLoggedIn.setVisibility(View.GONE);
+			mDiscogsAutoadd.setVisibility(View.GONE);
 			mDiscogsLogin.setVisibility(View.VISIBLE);
 			mDiscogsLogout.setVisibility(View.GONE);
 		}
@@ -147,6 +157,18 @@ public class SettingsScreen extends Activity implements Lastfm.ErrorHandler {
 			int oldNRecent = mPrefs.getInt(PREF_N_RECENT, DEFAULT_N_RECENT);
 			if (newNRecent != oldNRecent) {
 				mPrefs.edit().putInt(PREF_N_RECENT, newNRecent).commit();
+			}
+		}
+	};
+	
+	private OnCheckedChangeListener mDiscogsAutoaddListener = new OnCheckedChangeListener() {
+		
+		@Override
+		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+			if(isChecked) {
+				mDiscogs.setAutoadd(true);
+			} else {
+				mDiscogs.setAutoadd(false);
 			}
 		}
 	};

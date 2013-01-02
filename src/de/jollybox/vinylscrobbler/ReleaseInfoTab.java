@@ -13,6 +13,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.jollybox.vinylscrobbler.util.Discogs;
 import de.jollybox.vinylscrobbler.util.DiscogsQuery;
 import de.jollybox.vinylscrobbler.util.ReleaseInfo;
 
@@ -26,18 +27,31 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Gallery;
 import android.widget.ListView;
 import android.widget.TextView;
 
 public class ReleaseInfoTab extends Activity {
+	private Discogs mDiscogs;
+	private int mReleaseId = -1;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.info);
+		
+		//when logged in to discogs -> add option to add this release to the collection
+		mDiscogs = new Discogs(this);
+		if(mDiscogs.getUser() != null) {
+			Button discogsColl = (Button) findViewById(R.id.discogs_add);
+			discogsColl.setVisibility(View.VISIBLE);
+			discogsColl.setOnClickListener(discogsAddListener);
+		}
+		
 		
 		Intent intent = getIntent();
 		String query_string = intent.getData().getEncodedPath();
@@ -59,6 +73,9 @@ public class ReleaseInfoTab extends Activity {
 				}
 				
 				title.setText(release.getTitle());
+				//check for main version id, defaults to release id if it is not a master release
+				mReleaseId = release.getMainVersionId();
+				System.out.println("INFOTAB: release id= " + mReleaseId);
 				
 				ArrayAdapter<CharSequence> items = new ArrayAdapter<CharSequence>(mContext, R.layout.textlistitem) {
 					@Override
@@ -207,4 +224,14 @@ public class ReleaseInfoTab extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		return  MainScreen.handleMenuEvent(this, item) || super.onOptionsItemSelected(item);
 	}
+	
+	private OnClickListener discogsAddListener = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			if(mReleaseId != -1) {
+				mDiscogs.addRelease(mReleaseId);
+			}
+		}
+	};
 }

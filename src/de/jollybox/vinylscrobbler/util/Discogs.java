@@ -10,7 +10,6 @@ package de.jollybox.vinylscrobbler.util;
 
 import java.util.Map;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.scribe.builder.ServiceBuilder;
@@ -21,14 +20,10 @@ import org.scribe.oauth.OAuthService;
 
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import de.jollybox.vinylscrobbler.CollectionScreen;
+import android.widget.Toast;
 import de.jollybox.vinylscrobbler.R;
-import de.jollybox.vinylscrobbler.ReleasesAdapter;
-import de.jollybox.vinylscrobbler.SettingsScreen;
-import de.jollybox.vinylscrobbler.util.ReleaseInfo.ReleaseSummary;
 
 public class Discogs extends ContextWrapper {
 	private final String API_KEY;
@@ -41,6 +36,7 @@ public class Discogs extends ContextWrapper {
 	private String mAccessToken;
 	private String mAccessSecret;
 	private String mUserName;
+	private boolean mAutoadd;
 	
 	private ResultWaiter mWaiter;
 
@@ -55,6 +51,7 @@ public class Discogs extends ContextWrapper {
 		mAccessToken = mPrefs.getString("access_token", null);
 		mAccessSecret = mPrefs.getString("access_secret", null);
 		mUserName = mPrefs.getString("user_name", null);
+		mAutoadd = mPrefs.getBoolean("autoadd", false);
 		
 		mOAuthService = new ServiceBuilder().provider(DiscogsApi.class)
 				.apiKey(API_KEY).apiSecret(API_SECRET)
@@ -66,7 +63,7 @@ public class Discogs extends ContextWrapper {
 		return mUserName;
 	}
 	
-	//only add releases that are not added to discogs yet
+	//only add releases that are not added to discogs colelction yet
 	public void addRelease(final int id) {
 		//first check if the user has the current release in his collection, do an info query
 		//TODO check if instances/1 is a given when a release is present in a collection
@@ -91,7 +88,8 @@ public class Discogs extends ContextWrapper {
 								protected void onResult(JSONObject result) {
 										//check if we correctly added the release
 										if (result.has("resource_url")) {
-											//correctly added release to the discogs collection nothing to do... for now
+											//correctly added release to the discogs collection
+											Toast.makeText(Discogs.this, R.string.discogs_add_success, Toast.LENGTH_SHORT).show();
 										} else {
 											errorMessage("Could not add release to the discogs collection");
 										}
@@ -109,6 +107,7 @@ public class Discogs extends ContextWrapper {
 						}
 					}
 					// if we don't get a not found error, assume the release is already added to the collection
+					Toast.makeText(Discogs.this, R.string.discogs_already_added, Toast.LENGTH_SHORT).show();
 				} catch (JSONException json_exc) {
 					errorMessage("Cannot comprehend data");
 				}
@@ -197,10 +196,19 @@ public class Discogs extends ContextWrapper {
 		} else {
 			prefEdit.remove("user_name");
 		}
-
+		
 		prefEdit.commit();
 	}
 	
+	public boolean isAutoadd() {
+		return mAutoadd;
+	}
+
+	public void setAutoadd(boolean mAutoadd) {
+		this.mAutoadd = mAutoadd;
+		mPrefs.edit().putBoolean("autoadd", mAutoadd).commit();
+	}
+
 	public interface ResultWaiter {
 		public void onResult(Map<String,String> result);
 	}

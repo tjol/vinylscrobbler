@@ -83,6 +83,13 @@
         android:text="@string/discogs_loggedin_as"
         android:textSize="16sp" />
 
+    <CheckBox
+        android:id="@+id/Discogs_Autoadd"
+        android:layout_width="256dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:text="@string/discogs_autoadd" />
+
     <Button
         android:id="@+id/Discogs_Login_now"
         android:layout_width="fill_parent"

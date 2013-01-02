@@ -130,7 +130,7 @@ public abstract class DiscogsQuery extends AsyncTask<String, Void, JSONObject> {
 					+ query_string;
 
 			String json_data;
-			// check if we have an discogs auth object, use it to sign and execute our request
+			// check if we have a discogs auth object, use it to sign and execute our request
 			if (mDiscogsAuth != null) {
 				OAuthRequest request = new OAuthRequest(mHttpMethod, url);
 				mDiscogsAuth.signRequest(request);

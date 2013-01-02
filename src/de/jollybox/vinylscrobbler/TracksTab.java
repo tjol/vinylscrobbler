@@ -79,6 +79,7 @@ public class TracksTab extends ListActivity
 					return;
 				}
 				mTracks = mRelease.getTracks();
+				System.out.println("TRACKTAB: release id= " + mRelease.getMainVersionId());
 				ListView list = getListView();
 				setListAdapter(mTracks);
 				list.setOnItemClickListener(TracksTab.this);
@@ -216,9 +217,9 @@ public class TracksTab extends ListActivity
 		}
 		
 		//if we want to auto-add scrobbled releases to the discogs collection, do so now
-		//TODO actually check for this setting, currently not present
-		if(mDiscogs.getUser() != null) {
-			mDiscogs.addRelease(mRelease.getId());
+		if(mDiscogs.getUser() != null && mDiscogs.isAutoadd()) {
+			//check for main version id, defaults to release id if it is not a master release
+			mDiscogs.addRelease(mRelease.getMainVersionId());
 		}
 		
 		// Remember this scrobble and show it on the home screen next time.

@@ -222,8 +222,7 @@ public class TracksTab extends ListActivity
 		}
 		
 		// Remember this scrobble and show it on the home screen next time.
-		VinylDatabase history = new VinylDatabase(this);
-		history.rememberRelease(mRelease.getSummary());
+		VinylDatabase.getInstance(this).rememberRelease(mRelease.getSummary());
 		
 		return true;
 	}

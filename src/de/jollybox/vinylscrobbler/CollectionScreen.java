@@ -37,7 +37,7 @@ public class CollectionScreen extends Activity {
 	private EditText mQuery;
 	private Discogs mDiscogs;
 	private ReleasesAdapter mReleases;
-	private VinylDatabase mCollection;
+	//private VinylDatabase mCollection;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +48,6 @@ public class CollectionScreen extends Activity {
 		mList.setVerticalFadingEdgeEnabled(true);
 
 		mDiscogs = new Discogs(this);
-		mCollection = new VinylDatabase(this);
 		mQuery = (EditText) findViewById(R.id.search_query);
 		mQuery.setOnClickListener(mSearchClickListener);
 		mQuery.setFocusable(false);
@@ -56,16 +55,14 @@ public class CollectionScreen extends Activity {
 			public void afterTextChanged(Editable s) {
 			}
 
-			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 			}
 
-			public void onTextChanged(CharSequence s, int start, int before,
-					int count) {
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				mReleases.ApplyFilter(mQuery.getText().toString());
 			}
 		});
-		List<ReleaseSummary> releases = mCollection.getDiscogsCollection();
+		List<ReleaseSummary> releases = VinylDatabase.getInstance(this).getDiscogsCollection();
 		if (releases.size() != 0) {
 			mReleases = new ReleasesAdapter(CollectionScreen.this, releases);
 			mList.setAdapter(mReleases);
@@ -79,11 +76,10 @@ public class CollectionScreen extends Activity {
 				if (result) {
 					// the discogs collection has changed, fetch it
 					getCollection(new JSONArray(), 1);
-				} 
+				}
 			}
 		});
-		
-		
+
 	}
 
 	private OnClickListener mSearchClickListener = new OnClickListener() {
@@ -99,57 +95,38 @@ public class CollectionScreen extends Activity {
 	};
 
 	private void getCollection(final JSONArray currResults, final int page) {
-		final String query_string = "/users/" + mDiscogs.getUser()
-				+ "/collection/folders/0/releases?per_page=100&page=" + page;
-		DiscogsQuery query = new DiscogsQuery.WithAlertDialog(this, false,
-				mDiscogs) {
+		final String query_string = "/users/" + mDiscogs.getUser() + "/collection/folders/0/releases?per_page=100&page=" + page;
+		DiscogsQuery query = new DiscogsQuery.WithAlertDialog(this, false, mDiscogs) {
 			@Override
 			protected void onResult(JSONObject result) {
 				try {
-					// check if we get an authentication error (key remotely
-					// revoked)
+					// check if we get an authentication error (key remotely revoked)
 					if (result.has("message")) {
-						if (result.getString("message")
-								.contains("authenticate")) {
-							// the current discogs token is invalid, clear
-							// discogs session and remove the query from the
-							// cache so after login we get the correct results
+						if (result.getString("message").contains("authenticate")) {
+							// the current discogs token is invalid, clear discogs session, go to settings
 							mDiscogs.forgetSession();
-							removeFromCache(query_string);
-							errorMessage(res
-									.getString(R.string.discogs_nologin));
-							startActivity(new Intent(CollectionScreen.this,
-									SettingsScreen.class));
+							errorMessage(res.getString(R.string.discogs_nologin));
+							startActivity(new Intent(CollectionScreen.this, SettingsScreen.class));
 							return;
 						}
 					}
-					JSONArray releases = concatArray(currResults,
-							result.getJSONArray("releases"));
+					JSONArray releases = concatArray(currResults, result.getJSONArray("releases"));
 					// check for pagination
-					int totalPages = result.getJSONObject("pagination").getInt(
-							"pages");
+					int totalPages = result.getJSONObject("pagination").getInt("pages");
 					if (page < totalPages) {
 						getCollection(releases, page + 1);
 					} else {
-						// finalise the collection list if the last page has
-						// been read and update the db
-						mCollection.updateDiscogsCollection(ReleaseSummary
-								.fromJSONArray(releases));
+						// finalise the collection list if the last page has been read and update the db
+						VinylDatabase.getInstance(CollectionScreen.this).updateDiscogsCollection(ReleaseSummary.fromCollectionJSONArray(releases));
 						// notify the discogs manager that the local db is synced with discogs
 						mDiscogs.saveDiscogsState();
-						// reread the db to present the correct collection incl
-						// already stored thumbs TODO: could be more efficient,
-						// no?
-						mReleases = new ReleasesAdapter(CollectionScreen.this,
-								mCollection.getDiscogsCollection());
+						// reread the db to present the correct collection TODO: could be more efficient, no?
+						mReleases = new ReleasesAdapter(CollectionScreen.this, VinylDatabase.getInstance(CollectionScreen.this).getDiscogsCollection());
 						mList.setAdapter(mReleases);
 						mList.setOnItemClickListener(new ReleasesAdapter.ReleaseOpener(CollectionScreen.this));
 					}
 				} catch (JSONException json_exc) {
 					errorMessage("Cannot comprehend data");
-					// remove the current query from the cache since it has
-					// (temporary?) faulty results
-					removeFromCache(query_string);
 				}
 			}
 		};
@@ -157,8 +134,7 @@ public class CollectionScreen extends Activity {
 	}
 
 	// so we can concatenate the paginated collection results
-	private JSONArray concatArray(JSONArray arr1, JSONArray arr2)
-			throws JSONException {
+	private JSONArray concatArray(JSONArray arr1, JSONArray arr2) throws JSONException {
 		JSONArray result = new JSONArray();
 		for (int i = 0; i < arr1.length(); i++) {
 			result.put(arr1.get(i));
@@ -183,8 +159,7 @@ public class CollectionScreen extends Activity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		return MainScreen.handleMenuEvent(this, item)
-				|| super.onOptionsItemSelected(item);
+		return MainScreen.handleMenuEvent(this, item) || super.onOptionsItemSelected(item);
 	}
 
 }

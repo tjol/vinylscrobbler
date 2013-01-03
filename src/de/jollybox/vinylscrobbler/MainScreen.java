@@ -77,8 +77,7 @@ public class MainScreen extends ListActivity {
 	}
 	
 	protected void populateList(boolean create) {
-		VinylDatabase history = new VinylDatabase(this);
-		List<ReleaseSummary> recentReleases = history.getRecentReleases();
+		List<ReleaseSummary> recentReleases = VinylDatabase.getInstance(this).getRecentReleases();
 		ListAdapter releaseAdapter = new ReleasesAdapter(this, recentReleases);
 		
 		ListView list = getListView();

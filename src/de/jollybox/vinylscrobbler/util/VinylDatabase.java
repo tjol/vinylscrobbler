@@ -25,13 +25,10 @@ public class VinylDatabase extends SQLiteOpenHelper {
 	private static final String DB_NAME = "VinylScrobbler";
 	private static VinylDatabase instance;
 	private final Context mContext;
-	private boolean mCacheCollection;
 
 	public VinylDatabase(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
 		mContext = context;
-		//check if we need to cache the discogs collection
-		setCacheCollection(new Discogs(context).isCacheCollection());
 	}
 
 	public static synchronized VinylDatabase getInstance(Context context) {
@@ -103,7 +100,6 @@ public class VinylDatabase extends SQLiteOpenHelper {
 	}
 	
 	public long getCollectionSize() {
-		if(!mCacheCollection) return 0;
 		SQLiteDatabase db = getWritableDatabase();
 		return DatabaseUtils.queryNumEntries(db,"discogs_collection");
 	}
@@ -117,7 +113,6 @@ public class VinylDatabase extends SQLiteOpenHelper {
 	 * only the new releases added to discogs
 	 */
 	public void updateDiscogsCollection(List<ReleaseSummary> discogs) {
-		if(!mCacheCollection) return;
 		// a map of ids to remove, with their corresponding thumb_uri, to clear
 		// the stored thumb
 		SparseArray<String> toRemove = new SparseArray<String>();
@@ -165,7 +160,6 @@ public class VinylDatabase extends SQLiteOpenHelper {
 	}
 
 	public void storeThumb(String thumbURI, Bitmap thumb) {
-		if(!mCacheCollection) return;
 		if (thumb != null) {
 			SQLiteDatabase db = getWritableDatabase();
 			ContentValues values = new ContentValues(3);
@@ -183,7 +177,6 @@ public class VinylDatabase extends SQLiteOpenHelper {
 	}
 
 	public Bitmap getThumb(String thumbURI) {
-		if(!mCacheCollection) return null;
 		SQLiteDatabase db = getWritableDatabase();
 		Bitmap storedThumb = null;
 		String[] columns = { "thumb" };
@@ -201,7 +194,6 @@ public class VinylDatabase extends SQLiteOpenHelper {
 	}
 
 	public List<ReleaseSummary> getDiscogsCollection() {
-		if(!mCacheCollection) return new ArrayList<ReleaseInfo.ReleaseSummary>();
 		SQLiteDatabase db = getWritableDatabase();
 
 		String[] columns = { "id", "is_master", "title", "artist", "thumb_uri" };
@@ -211,6 +203,7 @@ public class VinylDatabase extends SQLiteOpenHelper {
 			do {
 				ReleaseSummary release = new ReleaseSummary(curs.getInt(0), curs.getInt(1) != 0, curs.getString(2), curs.getString(3), null, null, null, curs.getString(4));
 				release.setCollection(true);
+				release.setCached(true);
 				releases.add(release);
 			} while (curs.moveToNext());
 		}
@@ -222,14 +215,6 @@ public class VinylDatabase extends SQLiteOpenHelper {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		bitmap.compress(CompressFormat.JPEG, 95, outputStream);
 		return outputStream.toByteArray();
-	}
-
-	public boolean isCacheCollection() {
-		return mCacheCollection;
-	}
-
-	public void setCacheCollection(boolean cache) {
-		this.mCacheCollection = cache;
 	}
 
 }

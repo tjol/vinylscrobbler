@@ -13,10 +13,6 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.jollybox.vinylscrobbler.util.Discogs;
-import de.jollybox.vinylscrobbler.util.DiscogsQuery;
-import de.jollybox.vinylscrobbler.util.ReleaseInfo;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -34,6 +30,9 @@ import android.widget.Button;
 import android.widget.Gallery;
 import android.widget.ListView;
 import android.widget.TextView;
+import de.jollybox.vinylscrobbler.util.Discogs;
+import de.jollybox.vinylscrobbler.util.DiscogsQuery;
+import de.jollybox.vinylscrobbler.util.ReleaseInfo;
 
 public class ReleaseInfoTab extends Activity {
 	private Discogs mDiscogs;

@@ -2,10 +2,6 @@ package de.jollybox.vinylscrobbler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-
-import de.jollybox.vinylscrobbler.util.ImageDownloader;
-import de.jollybox.vinylscrobbler.util.ReleaseInfo.ReleaseSummary;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,11 +9,13 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import de.jollybox.vinylscrobbler.util.ImageDownloader;
+import de.jollybox.vinylscrobbler.util.ReleaseInfo.ReleaseSummary;
 
 public class ReleasesAdapter extends BaseAdapter {
 	private final List<ReleaseSummary> mReleases;
@@ -92,8 +90,8 @@ public class ReleasesAdapter extends BaseAdapter {
 		img.setImageBitmap(null);
 		String thumbURI = release.getThumbURI();
 		if (thumbURI != null) {
-			//if it's part of the discogs collection, also search the db for the thumb
-			if (release.isCollection()) {
+			//if it's part of the cached discogs collection, also search the db for the thumb
+			if (release.isCached()) {
 				mDownloader.getBitmap(thumbURI, img, true);
 			} else {
 				mDownloader.getBitmap(thumbURI, img);

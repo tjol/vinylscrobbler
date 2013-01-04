@@ -15,7 +15,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.webkit.WebSettings.PluginState;
 import de.jollybox.vinylscrobbler.util.Discogs;
 
 public class DiscogsOauth extends Activity {

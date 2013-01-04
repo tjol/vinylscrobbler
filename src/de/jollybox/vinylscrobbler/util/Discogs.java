@@ -8,9 +8,6 @@
 
 package de.jollybox.vinylscrobbler.util;
 
-import java.util.Map;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.scribe.builder.ServiceBuilder;
@@ -21,15 +18,10 @@ import org.scribe.oauth.OAuthService;
 
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.widget.Toast;
-import de.jollybox.vinylscrobbler.CollectionScreen;
 import de.jollybox.vinylscrobbler.R;
-import de.jollybox.vinylscrobbler.ReleasesAdapter;
-import de.jollybox.vinylscrobbler.SettingsScreen;
-import de.jollybox.vinylscrobbler.util.ReleaseInfo.ReleaseSummary;
 
 public class Discogs extends ContextWrapper {
 	private final String API_KEY;
@@ -274,7 +266,6 @@ public class Discogs extends ContextWrapper {
 
 	public void setCacheCollection(boolean cache) {
 		this.mCacheCollection = cache;
-		VinylDatabase.getInstance(this).setCacheCollection(cache);
 		mCollectionLast = 0;
 		mCollectionSize = 0;
 		saveCollectionState();

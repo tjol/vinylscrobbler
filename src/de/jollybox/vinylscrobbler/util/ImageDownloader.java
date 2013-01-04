@@ -18,8 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 
-import de.jollybox.vinylscrobbler.util.ReleaseInfo.ReleaseSummary;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -78,7 +76,11 @@ public final class ImageDownloader {
 			dl = new DownloadTask();
 			dl.mImg = img;
 			dl.mStoreInDb = localThumb;
-			dl.execute(url);
+			try{
+				dl.execute(url);
+			} catch(Exception e) {
+				//could happen if there are too many threads open
+			}
 		} else {
 			dl.mImg = img;
 			dl.mStoreInDb = localThumb;

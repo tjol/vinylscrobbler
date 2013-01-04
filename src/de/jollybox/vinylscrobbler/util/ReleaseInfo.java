@@ -18,10 +18,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import de.jollybox.vinylscrobbler.DiscogsImageAdapter;
 
 public class ReleaseInfo implements Cloneable {
@@ -438,6 +436,7 @@ public class ReleaseInfo implements Cloneable {
 		protected String mLabel = null;
 		protected String mArtist = null;
 		protected boolean mCollection;
+		protected boolean mCached = false;
 
 		protected ReleaseSummary() {
 			super();
@@ -465,6 +464,15 @@ public class ReleaseInfo implements Cloneable {
 		public void setCollection(boolean collection) {
 			this.mCollection = collection;
 		}
+		
+		public boolean isCached() {
+			return mCached;
+		}
+
+		public void setCached(boolean cached) {
+			this.mCached = cached;
+		}
+
 
 		public String getThumbURI() {
 			return mThumbURI;

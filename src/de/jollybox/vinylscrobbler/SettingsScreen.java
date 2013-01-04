@@ -13,6 +13,7 @@ import java.util.Map;
 import de.jollybox.vinylscrobbler.util.Discogs;
 import de.jollybox.vinylscrobbler.util.Helper;
 import de.jollybox.vinylscrobbler.util.Lastfm;
+import de.jollybox.vinylscrobbler.util.VinylDatabase;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -57,6 +58,7 @@ public class SettingsScreen extends Activity implements Lastfm.ErrorHandler {
 	private Button mDiscogsLogin;
 	private Button mDiscogsLogout;
 	private CheckBox mDiscogsAutoadd;
+	private CheckBox mDiscogsCollection;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +77,7 @@ public class SettingsScreen extends Activity implements Lastfm.ErrorHandler {
 		mLogout = (Button) findViewById(R.id.logout);
 		mDiscogsLoggedIn = (TextView) findViewById(R.id.Discogs_Logged_in);
 		mDiscogsAutoadd = (CheckBox) findViewById(R.id.Discogs_Autoadd);
+		mDiscogsCollection = (CheckBox) findViewById(R.id.Discogs_Collection);
 		mDiscogsLogin = (Button) findViewById(R.id.Discogs_Login_now);
 		mDiscogsLogout = (Button) findViewById(R.id.Discogs_Logout);
 		mLoggedIn.setVisibility(View.GONE);
@@ -82,9 +85,11 @@ public class SettingsScreen extends Activity implements Lastfm.ErrorHandler {
 		mLogout.setVisibility(View.GONE);
 		mDiscogsLoggedIn.setVisibility(View.GONE);
 		mDiscogsAutoadd.setVisibility(View.GONE);
+		mDiscogsCollection.setVisibility(View.GONE);
 		mDiscogsLogin.setVisibility(View.GONE);
 		mDiscogsLogout.setVisibility(View.GONE);
 		
+		mDiscogsCollection.setChecked(mDiscogs.isCacheCollection());
 		mDiscogsAutoadd.setChecked(mDiscogs.isAutoadd());
 		mNoOfRecent.setText(Integer.toString(nRecent));
 		mNoOfRecent.addTextChangedListener(mNoOfRecentWatcher);
@@ -129,13 +134,16 @@ public class SettingsScreen extends Activity implements Lastfm.ErrorHandler {
 			mDiscogsLoggedIn.setVisibility(View.VISIBLE);
 			mDiscogsLogin.setVisibility(View.GONE);
 			mDiscogsAutoadd.setVisibility(View.VISIBLE);
+			mDiscogsCollection.setVisibility(View.VISIBLE);
 			mDiscogsLogout.setVisibility(View.VISIBLE);
 			mDiscogsLogout.setOnClickListener(mOnDiscogsLogoutClickListener);
 			mDiscogsAutoadd.setOnCheckedChangeListener(mDiscogsAutoaddListener);
+			mDiscogsCollection.setOnCheckedChangeListener(mDiscogsCollectionListener);
 		} else {
 			mDiscogsLogin.setOnClickListener(mOnDiscogsLoginClickListener);
 			mDiscogsLoggedIn.setVisibility(View.GONE);
 			mDiscogsAutoadd.setVisibility(View.GONE);
+			mDiscogsCollection.setVisibility(View.GONE);
 			mDiscogsLogin.setVisibility(View.VISIBLE);
 			mDiscogsLogout.setVisibility(View.GONE);
 		}
@@ -169,6 +177,19 @@ public class SettingsScreen extends Activity implements Lastfm.ErrorHandler {
 				mDiscogs.setAutoadd(true);
 			} else {
 				mDiscogs.setAutoadd(false);
+			}
+		}
+	};
+	
+	private OnCheckedChangeListener mDiscogsCollectionListener = new OnCheckedChangeListener() {
+		
+		@Override
+		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+			if(isChecked) {
+				mDiscogs.setCacheCollection(true);
+			} else {
+				mDiscogs.setCacheCollection(false);
+				VinylDatabase.getInstance(SettingsScreen.this).clearCollection();
 			}
 		}
 	};

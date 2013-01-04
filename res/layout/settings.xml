@@ -90,6 +90,14 @@
         android:layout_marginLeft="30dp"
         android:text="@string/discogs_autoadd" />
 
+    <CheckBox
+        android:id="@+id/Discogs_Collection"
+        android:layout_width="256dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:checked="true"
+        android:text="@string/discogs_store_collection" />
+
     <Button
         android:id="@+id/Discogs_Login_now"
         android:layout_width="fill_parent"

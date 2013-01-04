@@ -73,4 +73,5 @@
     <string name="discogs_add_collection">Add to Discogs collection</string>
     <string name="discogs_add_success">Record added to Discogs</string>
     <string name="discogs_already_added">Record already in Discogs collection</string>
+    <string name="discogs_store_collection">Cache your collection</string>
 </resources>

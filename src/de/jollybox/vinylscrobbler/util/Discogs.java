@@ -44,6 +44,7 @@ public class Discogs extends ContextWrapper {
 	private String mUserName;
 	private int mCollectionSize;
 	private int mCollectionLast;
+	private boolean mCacheCollection;
 	private boolean mAutoadd;
 	
 	private ResultWaiter mWaiter;
@@ -62,6 +63,7 @@ public class Discogs extends ContextWrapper {
 		mCollectionSize = mPrefs.getInt("collection_size", 0);
 		mCollectionLast = mPrefs.getInt("collection_last", 0);
 		mAutoadd = mPrefs.getBoolean("autoadd", false);
+		mCacheCollection = mPrefs.getBoolean("cache_collection", true);
 		
 		mOAuthService = new ServiceBuilder().provider(DiscogsApi.class)
 				.apiKey(API_KEY).apiSecret(API_SECRET)
@@ -147,9 +149,9 @@ public class Discogs extends ContextWrapper {
 					int collectionSize = result.getJSONObject("pagination").getInt("items");
 					if (collectionSize != 0) {
 						int lastAddition = result.getJSONArray("releases").getJSONObject(0).getInt("id");
-						//see if the remote collection has changed from the last fetch
-						if(mCollectionSize != collectionSize || mCollectionLast != lastAddition) {
-							//already store new values, but needs to be committed by saveDiscogsState() after db updates
+						//see if the remote collection has changed from the last fetch (+sanity check for local database)
+						if(mCollectionSize != collectionSize || mCollectionLast != lastAddition || VinylDatabase.getInstance(mContext).getCollectionSize() != mCollectionSize) {
+							//already store new values, but needs to be committed by saveCollectionState() after db updates
 							mCollectionLast = lastAddition;
 							mCollectionSize = collectionSize;
 							waiter.onResult(true);
@@ -168,7 +170,7 @@ public class Discogs extends ContextWrapper {
 	}
 	
 	//only call this after writing 
-	public void saveDiscogsState() {
+	public void saveCollectionState() {
 		SharedPreferences.Editor prefEdit = mPrefs.edit();
 		prefEdit.putInt("collection_size", mCollectionSize);
 		prefEdit.putInt("collection_last", mCollectionLast);
@@ -268,5 +270,18 @@ public class Discogs extends ContextWrapper {
 
 	public interface ResultWaiter {
 		public void onResult(Boolean result);
+	}
+
+	public void setCacheCollection(boolean cache) {
+		this.mCacheCollection = cache;
+		VinylDatabase.getInstance(this).setCacheCollection(cache);
+		mCollectionLast = 0;
+		mCollectionSize = 0;
+		saveCollectionState();
+		mPrefs.edit().putBoolean("cache_collection", mCacheCollection).commit();
+	}
+	
+	public boolean isCacheCollection() {
+		return mCacheCollection;
 	}
 }

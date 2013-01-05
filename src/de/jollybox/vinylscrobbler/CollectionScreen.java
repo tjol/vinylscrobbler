@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -57,6 +58,9 @@ public class CollectionScreen extends Activity {
 			setContentView(R.layout.collection_grid);
 			mGrid = (GridView) findViewById(R.id.results_grid);
 			mGrid.setVerticalFadingEdgeEnabled(true);
+			//change column count when in landscape
+			if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
+				mGrid.setNumColumns(5);
 		} else {
 			setContentView(R.layout.collection);
 			mList = (ListView) findViewById(R.id.results_list);

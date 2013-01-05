@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ListView;
 import de.jollybox.vinylscrobbler.util.Discogs;
 import de.jollybox.vinylscrobbler.util.DiscogsQuery;
@@ -33,21 +34,36 @@ import de.jollybox.vinylscrobbler.util.ReleaseInfo.ReleaseSummary;
 import de.jollybox.vinylscrobbler.util.VinylDatabase;
 
 public class CollectionScreen extends Activity {
+	private final static int GRID_MENU_ITEM = 1;
+	private final static int LIST_MENU_ITEM = 2;
+	
 	private ListView mList;
+	private GridView mGrid;
 	private EditText mQuery;
 	private Discogs mDiscogs;
 	private ReleasesAdapter mReleases;
+	
+	private boolean showGridView;
 
 	// private VinylDatabase mCollection;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.collection);
+		
+		showGridView = getIntent().getBooleanExtra("GRIDVIEW", false);
+		
+		if(showGridView) {
+			setContentView(R.layout.collection_grid);
+			mGrid = (GridView) findViewById(R.id.results_grid);
+			mGrid.setVerticalFadingEdgeEnabled(true);
+		} else {
+			setContentView(R.layout.collection);
+			mList = (ListView) findViewById(R.id.results_list);
+			mList.setVerticalFadingEdgeEnabled(true);
+		}
 
-		mList = (ListView) findViewById(R.id.results_list);
-		mList.setVerticalFadingEdgeEnabled(true);
-
+		
 		mDiscogs = new Discogs(this);
 		mQuery = (EditText) findViewById(R.id.search_query);
 		mQuery.setOnClickListener(mSearchClickListener);
@@ -71,8 +87,15 @@ public class CollectionScreen extends Activity {
 				if (releases.size() != 0) {
 					//show the local collection
 					mReleases = new ReleasesAdapter(CollectionScreen.this, releases);
-					mList.setAdapter(mReleases);
-					mList.setOnItemClickListener(new ReleasesAdapter.ReleaseOpener(CollectionScreen.this));
+					//switch between grid and list
+					if(showGridView) {
+						mGrid.setAdapter(mReleases);
+						mGrid.setOnItemClickListener(new ReleasesAdapter.ReleaseOpener(CollectionScreen.this));
+					} else {
+						mList.setAdapter(mReleases);
+						mList.setOnItemClickListener(new ReleasesAdapter.ReleaseOpener(CollectionScreen.this));
+					}
+
 					// check if the local collection is still valid
 					mDiscogs.onCollectionChanged(new Discogs.ResultWaiter() {
 						@Override
@@ -115,8 +138,7 @@ public class CollectionScreen extends Activity {
 			@Override
 			protected void onResult(JSONObject result) {
 				try {
-					// check if we get an authentication error (key remotely
-					// revoked)
+					// check if we get an authentication error (key remotely revoked)
 					if (result.has("message")) {
 						if (result.getString("message").contains("authenticate")) {
 							// the current discogs token is invalid, clear discogs session, remove the query from cache and go to settings
@@ -124,6 +146,7 @@ public class CollectionScreen extends Activity {
 							errorMessage(res.getString(R.string.discogs_nologin));
 							removeFromCache(query_string);
 							startActivity(new Intent(CollectionScreen.this, SettingsScreen.class));
+							finish();
 							return;
 						}
 					}
@@ -135,11 +158,9 @@ public class CollectionScreen extends Activity {
 					} else {
 						List<ReleaseSummary> collection = null;
 						if (mDiscogs.isCacheCollection()) {
-							// finalise the collection list if the last page has
-							// been read and update the db
+							// finalise the collection list if the last page has been read and update the db
 							VinylDatabase.getInstance(CollectionScreen.this).updateDiscogsCollection(ReleaseSummary.fromCollectionJSONArray(releases));
-							// notify the discogs manager that the local db is
-							// synced with discogs
+							// notify the discogs manager that the local db is synced with discogs
 							mDiscogs.saveCollectionState();
 							// reread the db to present the correct collection
 							collection = VinylDatabase.getInstance(CollectionScreen.this).getDiscogsCollection();
@@ -148,8 +169,13 @@ public class CollectionScreen extends Activity {
 						}
 						if (collection != null) {
 							mReleases = new ReleasesAdapter(CollectionScreen.this, collection);
-							mList.setAdapter(mReleases);
-							mList.setOnItemClickListener(new ReleasesAdapter.ReleaseOpener(CollectionScreen.this));
+							if(showGridView) {
+								mGrid.setAdapter(mReleases);
+								mGrid.setOnItemClickListener(new ReleasesAdapter.ReleaseOpener(CollectionScreen.this));
+							} else {
+								mList.setAdapter(mReleases);
+								mList.setOnItemClickListener(new ReleasesAdapter.ReleaseOpener(CollectionScreen.this));
+							}
 						}
 					}
 				} catch (JSONException json_exc) {
@@ -182,12 +208,37 @@ public class CollectionScreen extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main_menu, menu);
+		if(showGridView) {
+			menu.add(Menu.NONE,LIST_MENU_ITEM,Menu.NONE,R.string.collection_list);
+		} else {
+			menu.add(Menu.NONE,GRID_MENU_ITEM,Menu.NONE,R.string.collection_grid);
+		}
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		//logic for switching between grid and list view
+		if(item.getItemId() == GRID_MENU_ITEM) {
+			rememberView(GRID_MENU_ITEM);
+			Intent collectionIntent = new Intent(this, CollectionScreen.class);
+			collectionIntent.putExtra("GRIDVIEW", true);
+			startActivity(collectionIntent);
+			finish();
+			return true;
+		} else if (item.getItemId() == LIST_MENU_ITEM) {
+			rememberView(LIST_MENU_ITEM);
+			Intent collectionIntent = new Intent(this, CollectionScreen.class);
+			collectionIntent.putExtra("GRIDVIEW", false);
+			startActivity(collectionIntent);
+			finish();
+			return true;
+		}
 		return MainScreen.handleMenuEvent(this, item) || super.onOptionsItemSelected(item);
+	}
+	
+	private void rememberView(int viewtype) {
+		getSharedPreferences("de.jollybox.vinylscrobbler.settings",MODE_PRIVATE).edit().putBoolean("collection_gridview", viewtype == GRID_MENU_ITEM).commit();
 	}
 
 }

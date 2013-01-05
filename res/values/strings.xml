@@ -74,4 +74,6 @@
     <string name="discogs_add_success">Record added to Discogs</string>
     <string name="discogs_already_added">Record already in Discogs collection</string>
     <string name="discogs_store_collection">Cache your collection</string>
+    <string name="collection_grid">Show album wall</string>
+    <string name="collection_list">Show release list</string>
 </resources>

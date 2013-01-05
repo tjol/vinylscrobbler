@@ -141,7 +141,9 @@ public class MainScreen extends ListActivity {
 	
 	public boolean onCollectionRequested() {
 		if (new Discogs(this).getUser() != null) {
-			startActivity(new Intent(MainScreen.this, CollectionScreen.class));
+			Intent collectionIntent = new Intent(this, CollectionScreen.class);
+			collectionIntent.putExtra("GRIDVIEW", getSharedPreferences("de.jollybox.vinylscrobbler.settings",MODE_PRIVATE).getBoolean("collection_gridview", false));
+			startActivity(collectionIntent);
 			return true;
 		} else {
 			(new AlertDialog.Builder(this)).setMessage(R.string.discogs_nologin).setNeutralButton(android.R.string.ok, null).show();

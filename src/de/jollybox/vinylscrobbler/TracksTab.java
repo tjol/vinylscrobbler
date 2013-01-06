@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 import de.jollybox.vinylscrobbler.util.Discogs;
 import de.jollybox.vinylscrobbler.util.DiscogsQuery;
+import de.jollybox.vinylscrobbler.util.TrackList.Track;
 import de.jollybox.vinylscrobbler.util.VinylDatabase;
 import de.jollybox.vinylscrobbler.util.Lastfm;
 import de.jollybox.vinylscrobbler.util.ReleaseInfo;
@@ -204,6 +205,15 @@ public class TracksTab extends ListActivity
 		default:
 			return false;
 		}
+		
+		//filter out tracks with zero length (as they're label/pseudo tracks)
+		ArrayList<Track> noPseudoTracks = new ArrayList<TrackList.Track>();
+		for (Track t : scrobble_these) {
+			if(t.getPosition().length() != 0) {
+				noPseudoTracks.add(t);
+			}
+		}
+		scrobble_these = noPseudoTracks;
 		
 		// When should I scrobble?
 		switch (item.getGroupId() & SC_T_MASK) {

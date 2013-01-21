@@ -46,6 +46,7 @@ public final class ImageDownloader {
 	public void getBitmap(String url, ImageView img, boolean localThumb) {
 		SoftReference<Bitmap> bmref;
 		Bitmap bmp;
+		
 		//check for cached thumb
 		if ((bmref = cCache.get(url)) != null) {
 			if ((bmp = bmref.get()) != null) {
@@ -107,7 +108,8 @@ public final class ImageDownloader {
 			HttpUriRequest request = new HttpGet(url);
 			try {
 				dataStream = Helper.doRequest(mContext, request);
-			} catch (IOException io_exc) {
+			} catch (Exception io_exc) {
+				//catches broken network and missing thumbnails
 				// TODO: handle.
 				return null;
 			}

@@ -206,7 +206,7 @@ public class TracksTab extends ListActivity
 			return false;
 		}
 		
-		//filter out tracks with zero length (as they're label/pseudo tracks)
+		//filter out pseudotracks that can appear when scrobble all or scrobble part is chosen
 		ArrayList<Track> noPseudoTracks = new ArrayList<TrackList.Track>();
 		for (Track t : scrobble_these) {
 			if(t.getPosition().length() != 0) {

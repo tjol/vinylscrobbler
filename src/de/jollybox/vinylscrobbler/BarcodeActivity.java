@@ -80,6 +80,7 @@ public class BarcodeActivity extends Activity {
 				String contents = data.getStringExtra("SCAN_RESULT");
 				Intent searchIntent = new Intent(this, SearchScreen.class);
 				searchIntent.putExtra(SearchManager.QUERY, contents);
+				searchIntent.putExtra("BARCODE", true);
 				searchIntent.putExtra("REDIRECT", true);
 				startActivity(searchIntent);
 			}

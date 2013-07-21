@@ -20,7 +20,6 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import de.jollybox.vinylscrobbler.DiscogsImageAdapter;
 
 public class ReleaseInfo implements Cloneable {
@@ -29,7 +28,7 @@ public class ReleaseInfo implements Cloneable {
 	private TrackList mTracks;
 	private boolean mIsMaster;
 	private int mMasterId;
-	private int mMainVerionId;
+	private int mMainVersionId;
 	private List<Integer> mVersionIds;
 	private List<Credit> mArtists;
 	private List<String> mGenres;
@@ -41,25 +40,25 @@ public class ReleaseInfo implements Cloneable {
 	private List<Credit> mExtraArtists;
 	private String mNotes;
 	private JSONArray mImages; // TODO: JSONArray may not be ideal here.
-	
+
 	private Context mContext;
-	
-	private static WeakHashMap<JSONObject, SoftReference<ReleaseInfo>> cCache = 
-			new WeakHashMap<JSONObject, SoftReference<ReleaseInfo>>();
-	
-	public static ReleaseInfo fromJSON(Context context, JSONObject discogsResp) throws JSONException {	
+
+	private static WeakHashMap<JSONObject, SoftReference<ReleaseInfo>> cCache = new WeakHashMap<JSONObject, SoftReference<ReleaseInfo>>();
+
+	public static ReleaseInfo fromJSON(Context context, JSONObject discogsResp) throws JSONException {
 		if (discogsResp.has("resp")) {
 			discogsResp = discogsResp.getJSONObject("resp");
 		}
-		
+
 		ReleaseInfo release;
-		synchronized(cCache) {
+		synchronized (cCache) {
 			if (cCache.containsKey(discogsResp)) {
 				if ((release = cCache.get(discogsResp).get()) != null) {
 					try {
 						release = (ReleaseInfo) release.clone();
 						release.mContext = context;
-						// cache the new object: it's younger, so it may stay around longer.
+						// cache the new object: it's younger, so it may stay
+						// around longer.
 						cCache.put(discogsResp, new SoftReference<ReleaseInfo>(release));
 						return release;
 					} catch (CloneNotSupportedException e) {
@@ -74,26 +73,26 @@ public class ReleaseInfo implements Cloneable {
 		cCache.put(discogsResp, new SoftReference<ReleaseInfo>(release));
 		return release;
 	}
-	
-	private ReleaseInfo (Context context, JSONObject discogsResp) throws JSONException {
+
+	private ReleaseInfo(Context context, JSONObject discogsResp) throws JSONException {
 		int i;
-		
+
 		mContext = context;
-		
+
 		mIsMaster = discogsResp.has("master");
-		
+
 		JSONObject r;
 		if (mIsMaster) {
 			r = discogsResp.getJSONObject("master");
-			
-			mMainVerionId = r.getInt("main_release");
-			
+
+			mMainVersionId = r.getInt("main_release");
+
 			JSONArray versions = r.getJSONArray("versions");
 			mVersionIds = new ArrayList<Integer>(versions.length());
 			for (i = 0; i < versions.length(); ++i) {
 				JSONObject version = versions.getJSONObject(i);
 				int id = version.getInt("id");
-				if (id == mMainVerionId) {
+				if (id == mMainVersionId) {
 					mTitle = version.getString("title");
 				}
 				mVersionIds.add(id);
@@ -103,24 +102,23 @@ public class ReleaseInfo implements Cloneable {
 			mTitle = r.getString("title");
 			mMasterId = r.optInt("master_id", -1);
 		}
-		
+
 		mId = r.getInt("id");
-		
+
 		if (r.has("formats")) {
 			JSONArray formats = r.getJSONArray("formats");
 			mFormatStrings = new ArrayList<String>(formats.length());
 			for (i = 0; i < formats.length(); ++i) {
 				JSONObject jfmt = formats.getJSONObject(i);
 				StringBuilder fmt = new StringBuilder();
-				fmt.append(String.format("%sÃ— %s",
-										 jfmt.getString("qty"),
-										 jfmt.getString("name")));
+				fmt.append(String.format("%s× %s", jfmt.getString("qty"), jfmt.getString("name")));
 				if (jfmt.has("descriptions")) {
 					JSONArray descriptions = jfmt.getJSONArray("descriptions");
 					if (descriptions.length() > 0) {
 						fmt.append(" (");
 						for (int j = 0; j < descriptions.length(); ++j) {
-							if (j != 0) fmt.append(", ");
+							if (j != 0)
+								fmt.append(", ");
 							fmt.append(descriptions.getString(j));
 						}
 						fmt.append(")");
@@ -131,7 +129,7 @@ public class ReleaseInfo implements Cloneable {
 		} else {
 			mFormatStrings = new ArrayList<String>();
 		}
-		
+
 		if (r.has("artists")) {
 			JSONArray artists = r.getJSONArray("artists");
 			mArtists = new ArrayList<Credit>(artists.length());
@@ -141,7 +139,7 @@ public class ReleaseInfo implements Cloneable {
 		} else {
 			mArtists = new ArrayList<Credit>();
 		}
-		
+
 		if (r.has("extra_artists")) {
 			JSONArray extra_artists = r.getJSONArray("extra_artists");
 			mExtraArtists = new ArrayList<Credit>(extra_artists.length());
@@ -151,7 +149,7 @@ public class ReleaseInfo implements Cloneable {
 		} else {
 			mExtraArtists = new ArrayList<Credit>();
 		}
-		
+
 		if (r.has("genres")) {
 			JSONArray genres = r.getJSONArray("genres");
 			mGenres = new ArrayList<String>(genres.length());
@@ -161,7 +159,7 @@ public class ReleaseInfo implements Cloneable {
 		} else {
 			mGenres = new ArrayList<String>();
 		}
-		
+
 		if (r.has("styles")) {
 			JSONArray styles = r.getJSONArray("styles");
 			mStyles = new ArrayList<String>(styles.length());
@@ -171,7 +169,7 @@ public class ReleaseInfo implements Cloneable {
 		} else {
 			mStyles = new ArrayList<String>();
 		}
-		
+
 		if (r.has("released_formatted")) {
 			mDateString = r.getString("released_formatted");
 		} else if (r.has("year")) {
@@ -179,7 +177,7 @@ public class ReleaseInfo implements Cloneable {
 		} else {
 			mDateString = null;
 		}
-		
+
 		if (r.has("labels")) {
 			JSONArray labels = r.getJSONArray("labels");
 			mCatalogEntries = new ArrayList<CatalogEntry>(labels.length());
@@ -189,15 +187,15 @@ public class ReleaseInfo implements Cloneable {
 		} else {
 			mCatalogEntries = new ArrayList<CatalogEntry>();
 		}
-		
+
 		mCountry = r.optString("country", null);
 		mNotes = r.optString("notes", null);
-		
+
 		mImages = r.optJSONArray("images");
-		
+
 		mTracks = new TrackList(mContext, r.getJSONArray("tracklist"));
 	}
-	
+
 	public ReleaseSummary getSummary() {
 		String label = null;
 		if (mCatalogEntries != null && mCatalogEntries.size() > 0)
@@ -211,9 +209,17 @@ public class ReleaseInfo implements Cloneable {
 		}
 		return new ReleaseSummary(mId, mIsMaster, mTitle, mIsMaster ? null : getFormatString(), label, mCountry, thumb);
 	}
-	
+
 	public int getId() {
 		return mId;
+	}
+
+	public int getMainVersionId() {
+		if (mIsMaster) {
+			return mMainVersionId;
+		} else {
+			return mId;
+		}
 	}
 
 	public String getTitle() {
@@ -229,13 +235,13 @@ public class ReleaseInfo implements Cloneable {
 	}
 
 	public int getMasterId() {
-		if (! mIsMaster) {
+		if (!mIsMaster) {
 			return mMasterId;
 		} else {
 			throw new RuntimeException("This is a master release.");
 		}
 	}
-	
+
 	public List<Integer> getVersionIds() {
 		if (mIsMaster) {
 			return new ArrayList<Integer>(mVersionIds);
@@ -243,11 +249,11 @@ public class ReleaseInfo implements Cloneable {
 			throw new RuntimeException("This is not a master release.");
 		}
 	}
-	
+
 	public List<Credit> getArtists() {
 		return new ArrayList<Credit>(mArtists);
 	}
-	
+
 	public String getArtistString() {
 		return Credit.artistsString(mArtists);
 	}
@@ -259,14 +265,14 @@ public class ReleaseInfo implements Cloneable {
 	public List<String> getStyles() {
 		return new ArrayList<String>(mStyles);
 	}
-	
+
 	public List<String> getFormatStrings() {
 		if (mIsMaster) {
 			throw new RuntimeException("This is a master release.");
 		}
 		return new ArrayList<String>(mFormatStrings);
 	}
-	
+
 	public String getFormatString() {
 		if (mIsMaster) {
 			throw new RuntimeException("This is a master release.");
@@ -274,8 +280,10 @@ public class ReleaseInfo implements Cloneable {
 		StringBuilder retv = new StringBuilder();
 		boolean first = true;
 		for (String f : mFormatStrings) {
-			if (!first) retv.append(", ");
-			else		first = false;
+			if (!first)
+				retv.append(", ");
+			else
+				first = false;
 			retv.append(f);
 		}
 		return retv.toString();
@@ -301,24 +309,24 @@ public class ReleaseInfo implements Cloneable {
 		return mNotes;
 	}
 
-	public DiscogsImageAdapter getGallery () {
+	public DiscogsImageAdapter getGallery() {
 		if (mImages != null) {
 			return new DiscogsImageAdapter(mContext, mImages);
 		} else {
 			return null;
 		}
 	}
-	
+
 	public static class CatalogEntry {
 		private String mLabel;
 		private String mCatalogNumber;
-		
-		public CatalogEntry (String label, String catno) {
+
+		public CatalogEntry(String label, String catno) {
 			mLabel = label;
 			mCatalogNumber = catno;
 		}
-		
-		public CatalogEntry (JSONObject json) throws JSONException {
+
+		public CatalogEntry(JSONObject json) throws JSONException {
 			mLabel = json.getString("name");
 			mCatalogNumber = json.getString("catno");
 		}
@@ -331,42 +339,41 @@ public class ReleaseInfo implements Cloneable {
 			return mCatalogNumber;
 		}
 	}
-	
+
 	public static class Credit implements Parcelable {
 		private String mArtist;
 		private String mArtistNameVar;
 		private String mRole;
 		private String mJoin; // what is this?
 		private String mTracks; //
-		
-		public Credit (JSONObject source) throws JSONException {
+
+		public Credit(JSONObject source) throws JSONException {
 			mArtist = source.getString("name");
 			mArtistNameVar = source.getString("anv");
 			mRole = source.getString("role");
 			mJoin = source.getString("join");
 			mTracks = source.getString("tracks");
 		}
-		
-		public Credit (Parcel in) {
+
+		public Credit(Parcel in) {
 			mArtist = in.readString();
 			mArtistNameVar = in.readString();
 			mRole = in.readString();
 			mJoin = in.readString();
 			mTracks = in.readString();
 		}
-		
-		public static final Parcelable.Creator<Credit> CREATOR = 
-				new Creator<ReleaseInfo.Credit>() {
-					
-					public Credit[] newArray(int size) {
-						return new Credit[size];
-					}
-					
-					public Credit createFromParcel(Parcel source) {
-						return new Credit (source);
-					}
-				};
-		
+
+		public static final Parcelable.Creator<Credit> CREATOR = new Creator<ReleaseInfo.Credit>() {
+
+			public Credit[] newArray(int size) {
+				return new Credit[size];
+			}
+
+			public Credit createFromParcel(Parcel source) {
+				return new Credit(source);
+			}
+		};
+
 		public void writeToParcel(Parcel dest, int flags) {
 			dest.writeString(mArtist);
 			dest.writeString(mArtistNameVar);
@@ -374,16 +381,16 @@ public class ReleaseInfo implements Cloneable {
 			dest.writeString(mJoin);
 			dest.writeString(mTracks);
 		}
-		
+
 		public int describeContents() {
 			// nothing special going on here - not a file descriptor.
 			return 0;
 		}
-				
+
 		public String getCanonicalArtistName() {
 			return mArtist;
 		}
-		
+
 		public String getArtist() {
 			if (mArtistNameVar.equals("")) {
 				return mArtist;
@@ -391,32 +398,34 @@ public class ReleaseInfo implements Cloneable {
 				return mArtistNameVar;
 			}
 		}
-		
+
 		public String getRole() {
 			return mRole;
 		}
-		
+
 		public String getJoin() {
 			return mJoin;
 		}
-		
+
 		public String getTracks() {
 			return mTracks;
 		}
-		
+
 		public static String artistsString(Iterable<Credit> artists) {
 			StringBuilder sb = new StringBuilder();
 			boolean first = true;
 			for (Credit c : artists) {
-				if (!first) sb.append(" / ");
-				else first = false;
-				
+				if (!first)
+					sb.append(" / ");
+				else
+					first = false;
+
 				sb.append(Helper.removeNumberFromArtist(c.getArtist()));
 			}
 			return sb.toString();
 		}
 	}
-	
+
 	public static class ReleaseSummary {
 		protected int mId = -1;
 		protected String mThumbURI;
@@ -425,11 +434,15 @@ public class ReleaseInfo implements Cloneable {
 		protected boolean mIsMaster;
 		protected String mCountry = null;
 		protected String mLabel = null;
-		
-		protected ReleaseSummary () { super(); }
-		
-		public ReleaseSummary (int id, boolean isMaster, String title, String format,
-							   String label, String country, String thumbUri) {
+		protected String mArtist = null;
+		protected boolean mCollection;
+		protected boolean mCached = false;
+
+		protected ReleaseSummary() {
+			super();
+		}
+
+		public ReleaseSummary(int id, boolean isMaster, String title, String format, String label, String country, String thumbUri) {
 			mId = id;
 			mIsMaster = isMaster;
 			mTitle = title;
@@ -438,53 +451,100 @@ public class ReleaseInfo implements Cloneable {
 			mCountry = country;
 			mThumbURI = thumbUri;
 		}
+
+		public ReleaseSummary(int id, boolean isMaster, String title, String artist, String format, String label, String country, String thumbUri) {
+			this(id, isMaster, title, format, label, country, thumbUri);
+			mArtist = artist;
+		}
+
+		public boolean isCollection() {
+			return mCollection;
+		}
+
+		public void setCollection(boolean collection) {
+			this.mCollection = collection;
+		}
 		
+		public boolean isCached() {
+			return mCached;
+		}
+
+		public void setCached(boolean cached) {
+			this.mCached = cached;
+		}
+
+
 		public String getThumbURI() {
 			return mThumbURI;
 		}
+
 		public String getFormat() {
-			if (! mIsMaster) {
+			if (!mIsMaster) {
 				return mFormat;
 			} else {
 				throw new RuntimeException("This is a master release.");
 			}
 		}
+
 		public String getTitle() {
 			return mTitle;
 		}
+
+		public String getArtist() {
+			return mArtist;
+		}
+
 		public boolean isMaster() {
 			return mIsMaster;
 		}
+
 		public String getCountry() {
-			if (! mIsMaster) {
+			if (!mIsMaster) {
 				return mCountry;
 			} else {
 				throw new RuntimeException("This is a master release.");
 			}
 		}
+
 		public String getLabel() {
-			if (! mIsMaster) {
+			if (!mIsMaster) {
 				return mLabel;
 			} else {
 				throw new RuntimeException("This is a master release.");
 			}
 		}
+
 		public int getId() {
 			return mId;
 		}
-		
-		public static List<ReleaseSummary> fromJSONArray (final JSONArray arr) throws JSONException {
+
+		public static List<ReleaseSummary> fromJSONArray(final JSONArray arr) throws JSONException {
 			List<ReleaseSummary> rv = new ArrayList<ReleaseSummary>(arr.length());
 			for (int i = 0; i < arr.length(); ++i) {
 				JSONObject desc = arr.getJSONObject(i);
+				ReleaseSummary s = new ReleaseSummary(desc.getInt("id"), desc.has("type") && desc.getString("type").equals("master"), desc.getString("title"),
+						desc.optString("format"), desc.optString("label", null), desc.optString("country", null), desc.optString("thumb", null));
+				rv.add(s);
+			}
+			return rv;
+		}
+
+		public static List<ReleaseSummary> fromCollectionJSONArray(final JSONArray arr) throws JSONException {
+			List<ReleaseSummary> rv = new ArrayList<ReleaseSummary>(arr.length());
+			for (int i = 0; i < arr.length(); ++i) {
+				JSONObject desc = arr.getJSONObject(i);
+				// get basic information, it is a collection array
+				desc = desc.getJSONObject("basic_information");
+				// create new releaseSummary
 				ReleaseSummary s = new ReleaseSummary(
-						desc.getInt("id"),
-						desc.has("type") && desc.getString("type").equals("master"),
+						desc.getInt("id"), 
+						desc.has("type") && desc.getString("type").equals("master"), 
 						desc.getString("title"),
-						desc.optString("format"),
-						desc.optString("label", null),
-						desc.optString("country", null),
+						Helper.removeNumberFromArtist(desc.getJSONArray("artists").getJSONObject(0).getString("name")), 
+						//don't store format/label/country
+						null, null, null, 
 						desc.optString("thumb", null));
+				s.setCollection(true);
 				rv.add(s);
 			}
 			return rv;

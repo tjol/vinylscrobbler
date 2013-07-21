@@ -15,8 +15,10 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.jollybox.vinylscrobbler.util.Discogs;
 import de.jollybox.vinylscrobbler.util.DiscogsQuery;
-import de.jollybox.vinylscrobbler.util.HistoryDatabase;
+import de.jollybox.vinylscrobbler.util.TrackList.Track;
+import de.jollybox.vinylscrobbler.util.VinylDatabase;
 import de.jollybox.vinylscrobbler.util.Lastfm;
 import de.jollybox.vinylscrobbler.util.ReleaseInfo;
 import de.jollybox.vinylscrobbler.util.TrackList;
@@ -48,6 +50,7 @@ public class TracksTab extends ListActivity
 	private Button mScrobbleBtn;
 	private Resources res;
 	private ReleaseInfo mRelease;
+	private Discogs mDiscogs;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +64,8 @@ public class TracksTab extends ListActivity
 		mScrobbleBtn.setOnClickListener(mOnScrobbleClickListener);
 		
 		initLastfm();
+		
+		mDiscogs = new Discogs(this);
 		
 		Intent intent = getIntent();
 		String query_string = intent.getData().getEncodedPath();
@@ -201,6 +206,15 @@ public class TracksTab extends ListActivity
 			return false;
 		}
 		
+		//filter out pseudotracks that can appear when scrobble all or scrobble part is chosen
+		ArrayList<Track> noPseudoTracks = new ArrayList<TrackList.Track>();
+		for (Track t : scrobble_these) {
+			if(t.getPosition().length() != 0) {
+				noPseudoTracks.add(t);
+			}
+		}
+		scrobble_these = noPseudoTracks;
+		
 		// When should I scrobble?
 		switch (item.getGroupId() & SC_T_MASK) {
 		case SC_T_FUTURE:
@@ -211,9 +225,14 @@ public class TracksTab extends ListActivity
 			break;
 		}
 		
+		//if we want to auto-add scrobbled releases to the discogs collection, do so now
+		if(mDiscogs.getUser() != null && mDiscogs.isAutoadd()) {
+			//check for main version id, defaults to release id if it is not a master release
+			mDiscogs.addRelease(mRelease.getMainVersionId());
+		}
+		
 		// Remember this scrobble and show it on the home screen next time.
-		HistoryDatabase history = new HistoryDatabase(this);
-		history.rememberRelease(mRelease.getSummary());
+		VinylDatabase.getInstance(this).rememberRelease(mRelease.getSummary());
 		
 		return true;
 	}

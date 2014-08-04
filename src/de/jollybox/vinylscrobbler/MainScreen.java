@@ -93,10 +93,10 @@ public class MainScreen extends ListActivity {
 			((ImageView)vSearch.findViewById(R.id.icon)).setImageResource(R.drawable.ic_menu_search);
 			vSearch.setClickable(false);
 			
-			final View vCollection = getLayoutInflater().inflate(R.layout.list_command, list, false);
-			((TextView)vCollection.findViewById(R.id.text)).setText(R.string.main_collection);
-			((ImageView)vCollection.findViewById(R.id.icon)).setImageResource(R.drawable.ic_menu_discogs);
-			vCollection.setClickable(false);
+			//final View vCollection = getLayoutInflater().inflate(R.layout.list_command, list, false);
+			//((TextView)vCollection.findViewById(R.id.text)).setText(R.string.main_collection);
+			//((ImageView)vCollection.findViewById(R.id.icon)).setImageResource(R.drawable.ic_menu_discogs);
+			//vCollection.setClickable(false);
 			
 			final View vSettings = getLayoutInflater().inflate(R.layout.list_command, list, false);
 			((TextView)vSettings.findViewById(R.id.text)).setText(R.string.main_settings);
@@ -108,7 +108,7 @@ public class MainScreen extends ListActivity {
 			
 			list.addHeaderView(vBarcode);
 			list.addHeaderView(vSearch);
-			list.addHeaderView(vCollection);
+			//list.addHeaderView(vCollection);
 			list.addHeaderView(vSettings);
 			
 			final OnItemClickListener releaseClickListener = new ReleasesAdapter.ReleaseOpener(this);
@@ -119,8 +119,8 @@ public class MainScreen extends ListActivity {
 						doBarcodeScan(MainScreen.this);
 					} else if (v == vSearch) {
 						onSearchRequested();
-					} else if (v == vCollection) {
-						onCollectionRequested();
+					//} else if (v == vCollection) {
+					//	onCollectionRequested();
 					} else if (v == vSettings) {
 						startActivity(new Intent(MainScreen.this, SettingsScreen.class));
 					} else {

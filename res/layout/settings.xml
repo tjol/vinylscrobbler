@@ -64,6 +64,7 @@
         android:text="@string/lastfm_logout" >
     </Button>
 
+    <!-- 
     <TextView
         android:id="@+id/TextView01"
         android:layout_width="wrap_content"
@@ -72,6 +73,7 @@
         android:text="@string/discogs"
         android:textSize="18sp"
         android:textStyle="bold" />
+    -->
 
     <TextView
         android:id="@+id/Discogs_Logged_in"

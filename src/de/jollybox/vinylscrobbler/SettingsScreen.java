@@ -127,6 +127,7 @@ public class SettingsScreen extends Activity implements Lastfm.ErrorHandler {
 			mLoggedIn.setVisibility(View.GONE);
 			mLoginNow.setVisibility(View.VISIBLE);
 		}
+		/*
 		String discogsUser;
 		if ((discogsUser = mDiscogs.getUser()) != null) {
 			mDiscogsLoggedIn.setText(Html.fromHtml(String.format(getResources()
@@ -147,6 +148,7 @@ public class SettingsScreen extends Activity implements Lastfm.ErrorHandler {
 			mDiscogsLogin.setVisibility(View.VISIBLE);
 			mDiscogsLogout.setVisibility(View.GONE);
 		}
+		*/
 	}
 
 	private TextWatcher mNoOfRecentWatcher = new TextWatcher() {

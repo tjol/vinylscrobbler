@@ -171,7 +171,6 @@ public class SettingsScreen extends Activity implements Lastfm.ErrorHandler {
 	
 	private OnCheckedChangeListener mDiscogsAutoaddListener = new OnCheckedChangeListener() {
 		
-		@Override
 		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 			if(isChecked) {
 				mDiscogs.setAutoadd(true);
@@ -183,7 +182,6 @@ public class SettingsScreen extends Activity implements Lastfm.ErrorHandler {
 	
 	private OnCheckedChangeListener mDiscogsCollectionListener = new OnCheckedChangeListener() {
 		
-		@Override
 		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 			if(isChecked) {
 				mDiscogs.setCacheCollection(true);

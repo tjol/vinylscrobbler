@@ -37,7 +37,7 @@ public class DiscogsReferenceDisplay extends TabActivity {
 		Intent outIntent = new Intent().addCategory(Intent.CATEGORY_TAB)
 									   .setData(inIntent.getData());
 		
-		if (refType.equals("artist")) {	
+		if (refType.equals("artists")) {	
 			
 			tabhost.addTab(tabhost.newTabSpec("info")
 								  .setIndicator(res.getString(R.string.tab_artist_info),
@@ -49,7 +49,7 @@ public class DiscogsReferenceDisplay extends TabActivity {
 					  			  .setContent(new Intent(outIntent).setAction("de.jollybox.vinylscrobbler.LIST_RELEASES")));
 			tabhost.setCurrentTab(0);
 			
-		} else if (refType.equals("master")) {	
+		} else if (refType.equals("masters")) {	
 			
 			tabhost.addTab(tabhost.newTabSpec("info")
 					   			  .setIndicator(res.getString(R.string.tab_master_info),
@@ -65,7 +65,7 @@ public class DiscogsReferenceDisplay extends TabActivity {
 								  .setContent(new Intent(outIntent).setAction("de.jollybox.vinylscrobbler.LIST_TRACKS")));
 			tabhost.setCurrentTab(2);
 			
-		} else if (refType.equals("release")) {	
+		} else if (refType.equals("releases")) {	
 			
 			tabhost.addTab(tabhost.newTabSpec("info")
 								  .setIndicator(res.getString(R.string.tab_release_info),

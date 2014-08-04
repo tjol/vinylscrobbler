@@ -40,10 +40,10 @@ public class ReleaseListTab extends Activity {
 		Uri target = intent.getData();
 		String query_string;
 		
-		if (target.getPathSegments().get(0).equals("artist")) {
-			query_string = target.getEncodedPath() + "?releases=1";
+		if (target.getPathSegments().get(0).equals("artists")) {
+			query_string = target.getEncodedPath() + "/releases";
 		} else { // master release
-			query_string = target.getEncodedPath();
+			query_string = target.getEncodedPath() + "/versions";
 		}
 		
 		DiscogsQuery query = new DiscogsQuery.WithAlertDialog(this) {
@@ -51,13 +51,10 @@ public class ReleaseListTab extends Activity {
 			protected void onResult(JSONObject result) {
 				try {
 					JSONArray releases;
-					JSONObject resp = result.getJSONObject("resp");
-					if (resp.has("artist")) {
-						releases = resp.getJSONObject("artist")
-									   .getJSONArray("releases");
+					if (result.has("versions")) {
+						releases = result.getJSONArray("versions");
 					} else {
-						releases = resp.getJSONObject("master")
-						   			   .getJSONArray("versions");
+						releases = result.getJSONArray("releases");
 					}
 					
 					//ReleasesAdapter adapter = new ReleasesAdapter(releases);

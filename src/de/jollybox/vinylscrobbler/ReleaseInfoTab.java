@@ -97,10 +97,10 @@ public class ReleaseInfoTab extends Activity {
 						if (first) first = false;
 						else ht.append(", ");
 
-						ht.append(String.format(" <a href=\"%s://%s/artist/%s\">%s</a>",
+						ht.append(String.format(" <a href=\"%s://%s/artists/%d\">%s</a>",
 								res.getString(R.string.uri_scheme),
 								res.getString(R.string.authority_discogs),
-								Uri.encode(artist.getCanonicalArtistName()),
+								artist.getId(),
 								artist.getArtist()));
 					}
 					items.add(Html.fromHtml(ht.toString()));
@@ -174,7 +174,7 @@ public class ReleaseInfoTab extends Activity {
 				
 				List<ReleaseInfo.Credit> extraArtists = release.getExtraArtists();
 				for (ReleaseInfo.Credit credit : extraArtists) {
-					String creditHtml = String.format("%s: <a href=\"%s://%s/artist/%s\">%s</a>",
+					String creditHtml = String.format("%s: <a href=\"%s://%s/artists/%s\">%s</a>",
 											credit.getRole(),
 											res.getString(R.string.uri_scheme),
 											res.getString(R.string.authority_discogs),
@@ -188,7 +188,7 @@ public class ReleaseInfoTab extends Activity {
 				}
 				
 				if (!release.isMaster() && release.getMasterId() != -1) {
-					items.add(Html.fromHtml(String.format("<a href=\"%s://%s/master/%s\">%s</a>",
+					items.add(Html.fromHtml(String.format("<a href=\"%s://%s/masters/%s\">%s</a>",
 							res.getString(R.string.uri_scheme),
 							res.getString(R.string.authority_discogs),
 							release.getMasterId(),
@@ -225,7 +225,6 @@ public class ReleaseInfoTab extends Activity {
 	
 	private OnClickListener discogsAddListener = new OnClickListener() {
 		
-		@Override
 		public void onClick(View v) {
 			if(mReleaseId != -1) {
 				mDiscogs.addRelease(mReleaseId);

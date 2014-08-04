@@ -147,17 +147,13 @@ public class SearchScreen extends Activity
 	public void goToResult (JSONObject result) {
 		try {
 			String type = result.getString("type");
-			Uri http_url = Uri.parse(result.getString("uri"));
+			Uri http_url = Uri.parse(result.getString("resource_url"));
 			Uri.Builder internal_uri_builder = new Uri.Builder();
 			internal_uri_builder.scheme("de.jollybox.vinylscrobbler");
 			internal_uri_builder.authority("discogs");
 			
-			if (type.equals("artist")) {
+			if (type.equals("artist") || type.equals("master") || type.equals("release")) {
 				internal_uri_builder.encodedPath(http_url.getEncodedPath());
-			} else if (type.equals("master") || type.equals("release")) {
-				List<String> pSegsIn = http_url.getPathSegments();
-				internal_uri_builder.appendPath(pSegsIn.get(1)); // master | release
-				internal_uri_builder.appendPath(pSegsIn.get(2)); // ID
 			} else {
 				return; // Not implemented. [possibly TODO]
 			}

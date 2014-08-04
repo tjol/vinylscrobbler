@@ -38,7 +38,7 @@ public class ArtistInfoTab extends Activity {
 		setContentView(R.layout.info);
 		
 		Intent intent = getIntent();
-		String query_string = intent.getData().getEncodedPath() + "?releases=1";
+		String query_string = intent.getData().getEncodedPath();
 		
 		DiscogsQuery query = new DiscogsQuery.WithAlertDialog(this) {
 			@Override
@@ -50,7 +50,8 @@ public class ArtistInfoTab extends Activity {
 				int i;
 				
 				try {
-					artist = result.getJSONObject("resp").getJSONObject("artist");
+					//artist = result.getJSONObject("resp").getJSONObject("artist");
+					artist = result;
 					
 					title.setText(artist.getString("name"));
 					
@@ -89,12 +90,13 @@ public class ArtistInfoTab extends Activity {
 						JSONArray members = artist.getJSONArray("members");
 						for (i = 0; i < members.length(); ++i) {
 							if (i != 0) ht.append(",");
-							String member = members.getString(i);
-							ht.append(String.format(" <a href=\"%s://%s/artist/%s\">%s</a>",
+							JSONObject member = members.getJSONObject(i);
+							Uri member_uri = Uri.parse(member.getString("resource_url"));
+							ht.append(String.format(" <a href=\"%s://%s/%s\">%s</a>",
 									res.getString(R.string.uri_scheme),
 									res.getString(R.string.authority_discogs),
-									Uri.encode(member),
-									member));
+									Uri.encode(member_uri.getEncodedPath()),
+									member.getString("name")));
 						}
 						items.add(Html.fromHtml(ht.toString()));
 					}

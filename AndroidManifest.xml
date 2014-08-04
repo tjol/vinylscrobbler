@@ -35,7 +35,7 @@
                 <category android:name="android.intent.category.TAB"></category>
                 <category android:name="android.intent.category.DEFAULT"></category>
                 <action android:name="de.jollybox.vinylscrobbler.VIEW_INFO"></action>
-                <data android:scheme="de.jollybox.vinylscrobbler" android:host="discogs" android:pathPrefix="/artist/"></data>
+                <data android:scheme="de.jollybox.vinylscrobbler" android:host="discogs" android:pathPrefix="/artists/"></data>
             </intent-filter>
             <meta-data android:name="android.app.default_searchable" android:value=".SearchScreen"></meta-data>
         </activity>
@@ -44,8 +44,8 @@
                 <category android:name="android.intent.category.TAB"></category>
                 <category android:name="android.intent.category.DEFAULT"></category>
                 <action android:name="de.jollybox.vinylscrobbler.LIST_RELEASES"></action>
-                <data android:scheme="de.jollybox.vinylscrobbler" android:host="discogs" android:pathPrefix="/artist/"></data>
-                <data android:scheme="de.jollybox.vinylscrobbler" android:host="discogs" android:pathPrefix="/master/"></data>
+                <data android:scheme="de.jollybox.vinylscrobbler" android:host="discogs" android:pathPrefix="/artists/"></data>
+                <data android:scheme="de.jollybox.vinylscrobbler" android:host="discogs" android:pathPrefix="/masters/"></data>
             </intent-filter>
             <meta-data android:name="android.app.default_searchable" android:value=".SearchScreen"></meta-data>
         </activity>
@@ -54,8 +54,8 @@
                 <category android:name="android.intent.category.TAB"></category>
                 <category android:name="android.intent.category.DEFAULT"></category>
                 <action android:name="de.jollybox.vinylscrobbler.VIEW_INFO"></action>
-                <data android:scheme="de.jollybox.vinylscrobbler" android:pathPrefix="/master/" android:host="discogs"></data>
-                <data android:scheme="de.jollybox.vinylscrobbler" android:pathPrefix="/release/" android:host="discogs"></data>
+                <data android:scheme="de.jollybox.vinylscrobbler" android:pathPrefix="/masters/" android:host="discogs"></data>
+                <data android:scheme="de.jollybox.vinylscrobbler" android:pathPrefix="/releases/" android:host="discogs"></data>
             </intent-filter>
             <meta-data android:name="android.app.default_searchable" android:value=".SearchScreen"></meta-data>
         </activity>
@@ -64,8 +64,8 @@
                 <category android:name="android.intent.category.TAB"></category>
                 <category android:name="android.intent.category.DEFAULT"></category>
                 <action android:name="de.jollybox.vinylscrobbler.LIST_TRACKS"></action>
-                <data android:scheme="de.jollybox.vinylscrobbler" android:pathPrefix="/master/" android:host="discogs"></data>
-                <data android:scheme="de.jollybox.vinylscrobbler" android:pathPrefix="/release/" android:host="discogs"></data>
+                <data android:scheme="de.jollybox.vinylscrobbler" android:pathPrefix="/masters/" android:host="discogs"></data>
+                <data android:scheme="de.jollybox.vinylscrobbler" android:pathPrefix="/releases/" android:host="discogs"></data>
             </intent-filter>
             <meta-data android:name="android.app.default_searchable" android:value=".SearchScreen"></meta-data>
         </activity>

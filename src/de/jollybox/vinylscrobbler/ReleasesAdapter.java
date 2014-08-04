@@ -136,12 +136,17 @@ public class ReleasesAdapter extends BaseAdapter {
 		public void onItemClick(AdapterView<?> adapter_view, View item_view, int position, long hash) {
 			ReleaseSummary release = (ReleaseSummary) adapter_view.getItemAtPosition(position);
 
-			String type = "release";
+			String type = "releases";
 			if (release.isMaster()) {
-				type = "master";
+				type = "masters";
 			}
 			int id = release.getId();
-			Uri uri = (new Uri.Builder()).scheme("de.jollybox.vinylscrobbler").authority("discogs").appendPath(type).appendPath(Integer.toString(id)).build();
+			Uri uri = (new Uri.Builder())
+						.scheme("de.jollybox.vinylscrobbler")
+						.authority("discogs")
+						.appendPath(type)
+						.appendPath(Integer.toString(id))
+						.build();
 
 			mContext.startActivity(new Intent(Intent.ACTION_VIEW, uri));
 		}

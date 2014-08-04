@@ -29,7 +29,6 @@ public class ReleaseInfo implements Cloneable {
 	private boolean mIsMaster;
 	private int mMasterId;
 	private int mMainVersionId;
-	private List<Integer> mVersionIds;
 	private List<Credit> mArtists;
 	private List<String> mGenres;
 	private List<String> mStyles;
@@ -79,26 +78,15 @@ public class ReleaseInfo implements Cloneable {
 
 		mContext = context;
 
-		mIsMaster = discogsResp.has("master");
+		mIsMaster = discogsResp.has("versions_url");
 
 		JSONObject r;
 		if (mIsMaster) {
-			r = discogsResp.getJSONObject("master");
-
-			mMainVersionId = r.getInt("main_release");
-
-			JSONArray versions = r.getJSONArray("versions");
-			mVersionIds = new ArrayList<Integer>(versions.length());
-			for (i = 0; i < versions.length(); ++i) {
-				JSONObject version = versions.getJSONObject(i);
-				int id = version.getInt("id");
-				if (id == mMainVersionId) {
-					mTitle = version.getString("title");
-				}
-				mVersionIds.add(id);
-			}
+			r = discogsResp;
+			mTitle = r.getString("title");
+			mMainVersionId = r.getInt("main_release");	
 		} else {
-			r = discogsResp.getJSONObject("release");
+			r = discogsResp;
 			mTitle = r.getString("title");
 			mMasterId = r.optInt("master_id", -1);
 		}
@@ -111,7 +99,7 @@ public class ReleaseInfo implements Cloneable {
 			for (i = 0; i < formats.length(); ++i) {
 				JSONObject jfmt = formats.getJSONObject(i);
 				StringBuilder fmt = new StringBuilder();
-				fmt.append(String.format("%s× %s", jfmt.getString("qty"), jfmt.getString("name")));
+				fmt.append(String.format("%sï¿½ %s", jfmt.getString("qty"), jfmt.getString("name")));
 				if (jfmt.has("descriptions")) {
 					JSONArray descriptions = jfmt.getJSONArray("descriptions");
 					if (descriptions.length() > 0) {
@@ -242,14 +230,6 @@ public class ReleaseInfo implements Cloneable {
 		}
 	}
 
-	public List<Integer> getVersionIds() {
-		if (mIsMaster) {
-			return new ArrayList<Integer>(mVersionIds);
-		} else {
-			throw new RuntimeException("This is not a master release.");
-		}
-	}
-
 	public List<Credit> getArtists() {
 		return new ArrayList<Credit>(mArtists);
 	}
@@ -346,6 +326,7 @@ public class ReleaseInfo implements Cloneable {
 		private String mRole;
 		private String mJoin; // what is this?
 		private String mTracks; //
+		private int mId;
 
 		public Credit(JSONObject source) throws JSONException {
 			mArtist = source.getString("name");
@@ -353,6 +334,7 @@ public class ReleaseInfo implements Cloneable {
 			mRole = source.getString("role");
 			mJoin = source.getString("join");
 			mTracks = source.getString("tracks");
+			mId = source.getInt("id");
 		}
 
 		public Credit(Parcel in) {
@@ -361,6 +343,7 @@ public class ReleaseInfo implements Cloneable {
 			mRole = in.readString();
 			mJoin = in.readString();
 			mTracks = in.readString();
+			mId = in.readInt();
 		}
 
 		public static final Parcelable.Creator<Credit> CREATOR = new Creator<ReleaseInfo.Credit>() {
@@ -380,6 +363,7 @@ public class ReleaseInfo implements Cloneable {
 			dest.writeString(mRole);
 			dest.writeString(mJoin);
 			dest.writeString(mTracks);
+			dest.writeInt(mId);
 		}
 
 		public int describeContents() {
@@ -397,6 +381,10 @@ public class ReleaseInfo implements Cloneable {
 			} else {
 				return mArtistNameVar;
 			}
+		}
+		
+		public int getId() {
+			return mId;
 		}
 
 		public String getRole() {

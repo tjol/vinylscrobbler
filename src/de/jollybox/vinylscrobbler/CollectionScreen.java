@@ -102,7 +102,6 @@ public class CollectionScreen extends Activity {
 
 					// check if the local collection is still valid
 					mDiscogs.onCollectionChanged(new Discogs.ResultWaiter() {
-						@Override
 						public void onResult(Boolean result) {
 							if (result) {
 								// the discogs collection has changed, fetch it

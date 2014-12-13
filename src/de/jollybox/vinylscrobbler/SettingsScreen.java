@@ -127,15 +127,15 @@ public class SettingsScreen extends Activity implements Lastfm.ErrorHandler {
 			mLoggedIn.setVisibility(View.GONE);
 			mLoginNow.setVisibility(View.VISIBLE);
 		}
-		/*
+		
 		String discogsUser;
 		if ((discogsUser = mDiscogs.getUser()) != null) {
 			mDiscogsLoggedIn.setText(Html.fromHtml(String.format(getResources()
 					.getString(R.string.loggedin_as), discogsUser)));
 			mDiscogsLoggedIn.setVisibility(View.VISIBLE);
 			mDiscogsLogin.setVisibility(View.GONE);
-			mDiscogsAutoadd.setVisibility(View.VISIBLE);
-			mDiscogsCollection.setVisibility(View.VISIBLE);
+			//mDiscogsAutoadd.setVisibility(View.VISIBLE);
+			//mDiscogsCollection.setVisibility(View.VISIBLE);
 			mDiscogsLogout.setVisibility(View.VISIBLE);
 			mDiscogsLogout.setOnClickListener(mOnDiscogsLogoutClickListener);
 			mDiscogsAutoadd.setOnCheckedChangeListener(mDiscogsAutoaddListener);
@@ -148,7 +148,7 @@ public class SettingsScreen extends Activity implements Lastfm.ErrorHandler {
 			mDiscogsLogin.setVisibility(View.VISIBLE);
 			mDiscogsLogout.setVisibility(View.GONE);
 		}
-		*/
+		
 	}
 
 	private TextWatcher mNoOfRecentWatcher = new TextWatcher() {

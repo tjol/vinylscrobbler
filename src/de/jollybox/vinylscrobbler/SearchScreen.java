@@ -14,12 +14,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.jollybox.vinylscrobbler.util.Discogs;
 import de.jollybox.vinylscrobbler.util.DiscogsQuery;
 import de.jollybox.vinylscrobbler.util.ImageDownloader;
-
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.SearchManager;
 import android.app.SearchManager.OnDismissListener;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,6 +42,8 @@ import android.widget.TextView;
 
 public class SearchScreen extends Activity
 						  implements OnItemClickListener, OnDismissListener {
+	private static final int DIALOG_NEED_DISCOGS = 1;
+	
 	protected SearchResultsAdapter mResultsAdapter;
 	protected ListView mList;
 	protected EditText mQuery;
@@ -46,6 +51,7 @@ public class SearchScreen extends Activity
 	protected boolean mRedirect = false;
 	protected boolean mBarcode = false;
 	protected boolean mHaveSearched = false;
+	protected Discogs mDiscogs;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +70,14 @@ public class SearchScreen extends Activity
 		mQuery.setOnClickListener(mSearchClickListener);
 		mQuery.setFocusable(false);
 		
+		mDiscogs = new Discogs(this);
+		
+		if (mDiscogs.getUser() == null) {
+			// Discogs user not logged in :-/
+			
+			showDialog(DIALOG_NEED_DISCOGS);
+		}
+		
 		SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
 		searchManager.setOnDismissListener(this);
 	
@@ -73,6 +87,25 @@ public class SearchScreen extends Activity
 			search(query);
 		} else {
 			onSearchRequested();
+		}
+	}
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch(id) {
+		case DIALOG_NEED_DISCOGS:
+			return (new AlertDialog.Builder(this))
+						.setMessage(R.string.need_discogs_login)
+						.setPositiveButton(R.string.go_to_settings, new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int which) {
+								startActivity(new Intent(SearchScreen.this, SettingsScreen.class));						
+							}
+						})
+						.setCancelable(false)
+						.create();
+
+		default:
+			return super.onCreateDialog(id);
 		}
 	}
 	
@@ -102,7 +135,7 @@ public class SearchScreen extends Activity
 		} else {
 			query_string = "/database/search?q=" + Uri.encode(quest);
 		}
-		DiscogsQuery q = new DiscogsQuery.WithAlertDialog(SearchScreen.this, false) {
+		DiscogsQuery q = new DiscogsQuery.WithAlertDialog(SearchScreen.this, false, mDiscogs) {
 			@Override
 			protected void onResult(JSONObject result) {
 				JSONArray result_array;

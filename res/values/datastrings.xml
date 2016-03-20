@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="discogs_api_root">http://api.discogs.com</string>
+	<string name="discogs_api_root">https://api.discogs.com</string>
     <string name="uri_scheme">de.jollybox.vinylscrobbler</string>
     <string name="authority_discogs">discogs</string>
     <string name="user_agent">VinylScrobbler/Android</string>

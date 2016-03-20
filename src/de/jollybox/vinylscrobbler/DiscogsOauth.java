@@ -40,7 +40,7 @@ public class DiscogsOauth extends Activity {
 		@Override
 		protected String doInBackground(Void... params) {
 			// Temporary URL
-			String authURL = "http://api.discogs.com/";
+			String authURL = "https://api.discogs.com/";
 
 			try {
 				mRequestToken = mService.getRequestToken();

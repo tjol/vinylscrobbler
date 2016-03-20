@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="de.jollybox.vinylscrobbler"
-      android:versionCode="6" android:versionName="0.4.5">
+      android:versionCode="8" android:versionName="0.4.7">
 
 
 <uses-permission android:name="android.permission.INTERNET"></uses-permission>
